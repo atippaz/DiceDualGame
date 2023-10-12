@@ -1,22 +1,12 @@
-import express from 'express'
-import bodyParser from 'body-parser'
-import routes from './routes/index.js'
-import cors from 'cors'
-import socket from './socket/index.js'
-const server = express()
-const port = 9000
-server.use(bodyParser.json())
-server.use(bodyParser.urlencoded({ extended: true }))
+import Api from './api/index.js'
+import gameServer from './game-server/index.js'
+import store from './store/index.js'
+import env from 'dotenv'
+env.config()
 
-server.get('/', (req, res) => {
-    res.end('hi what sub')
-})
-server.use(cors())
+function startUp() {
+    gameServer(store)
+    Api(gameServer, store)
+}
 
-const app = server.listen(port, function (err, result) {
-    console.log('running in port http://localhost:' + port)
-})
-const socketObj = socket(app)
-server.use(routes(socketObj).app)
-
-export { app, socketObj }
+startUp()
