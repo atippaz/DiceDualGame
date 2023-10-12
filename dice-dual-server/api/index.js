@@ -10,7 +10,11 @@ const api = function (socket = null, store = null) {
     server.use(bodyParser.json())
     server.use(bodyParser.urlencoded({ extended: true }))
     server.use(cors())
-    server.use(routes(socket))
+    server.use(routes(socket, store))
+
+    server.get('/', (req, res) => {
+        res.send({ data: 'hi', statusCode: 200 })
+    })
 
     return server.listen(port, (err, result) => {
         console.log('running in port http://localhost:' + port)

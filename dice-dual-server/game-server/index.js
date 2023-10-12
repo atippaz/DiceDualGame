@@ -18,6 +18,22 @@ const initial = (store) => {
         sendData(msg) {
             gameServer.emit('sendData', msg)
         },
+        sayHi() {
+            const d = new Date()
+            gameServer.emit(
+                'sayhi',
+                `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} : ${d
+                    .getHours()
+                    .toString()
+                    .padStart(2, '0')} : ${d
+                    .getMinutes()
+                    .toString()
+                    .padStart(2, '0')}: ${d
+                    .getSeconds()
+                    .toString()
+                    .padStart(2, '0')}`
+            )
+        },
     }
 }
 export default initial

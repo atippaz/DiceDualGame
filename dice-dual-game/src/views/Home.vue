@@ -1,7 +1,46 @@
 <template>
-    <HelloWorld />
+    <!-- <HelloWorld /> -->
+    {{ data }}
+    <v-container fluid>
+        <v-row no-gutters>
+            <v-col cols="1">
+                <SideBoard />
+            </v-col>
+            <v-col cols="5">
+                <div>
+                    <div class="d-flex align-center">
+                        <BoardGame />
+                    </div>
+                </div>
+            </v-col>
+            <v-col cols="5">
+                <BoardGame />
+            </v-col>
+            <v-col cols="1">
+                <div
+                    style="
+                        background-color: rgb(240, 240, 240);
+                        width: 100%;
+                        height: 100%;
+                    "
+                >
+                    sd
+                </div>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script lang="ts" setup>
-import HelloWorld from '@/components/HelloWorld.vue'
+import { ref } from 'vue'
+import BoardGame from '@/components/boardGame/BoardGame.vue'
+import SideBoard from '@/components/boardGame/SideBoard.vue'
+
+import Socket from '@/api/socket/index'
+const socket = Socket().socket
+const data = ref('')
+
+socket.on('sayhi', (_) => {
+    data.value = _
+})
 </script>
