@@ -14,6 +14,9 @@ const initial = (store) => {
             origin: '*',
         },
     })
+    gameServer.on('diceMove',({dice:{value},playerId})=>{
+        
+    })
     return {
         sendData(msg) {
             gameServer.emit('sendData', msg)

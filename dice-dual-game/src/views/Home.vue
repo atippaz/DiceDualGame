@@ -1,46 +1,34 @@
 <template>
-    <!-- <HelloWorld /> -->
-    {{ data }}
-    <v-container fluid>
-        <v-row no-gutters>
-            <v-col cols="1">
-                <SideBoard />
-            </v-col>
-            <v-col cols="5">
-                <div>
-                    <div class="d-flex align-center">
-                        <BoardGame />
-                    </div>
-                </div>
-            </v-col>
-            <v-col cols="5">
-                <BoardGame />
-            </v-col>
-            <v-col cols="1">
-                <div
-                    style="
-                        background-color: rgb(240, 240, 240);
-                        width: 100%;
-                        height: 100%;
-                    "
-                >
-                    sd
-                </div>
-            </v-col>
-        </v-row>
-    </v-container>
+    <v-text-field v-model="roomName"></v-text-field>
+<v-btn @click="createRoom"> create room</v-btn>
+<v-text-field v-model="roomid"></v-text-field>
+
+<v-btn @click="goToDiceRoom">join game</v-btn>
+
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
 import BoardGame from '@/components/boardGame/BoardGame.vue'
 import SideBoard from '@/components/boardGame/SideBoard.vue'
+import {roomApi} from '@/api/index'
+import { useRouter } from 'vue-router';
 
 import Socket from '@/api/socket/index'
+const router = useRouter()
+
 const socket = Socket().socket
 const data = ref('')
-
+const roomName = ref('')
+const roomid = ref('')
 socket.on('sayhi', (_) => {
     data.value = _
 })
+function createRoom(){
+    roomApi.getAll().then(e=>console.log(e))
+}
+function goToDiceRoom(){
+    if(roomid.value.trim() === '')return alert('please enter room id')
+    router.push({name:'DiceRoom',query:{roomId:roomid.value}})
+}
 </script>

@@ -5,3 +5,4 @@ export interface ApiResult<T = null> {
     data: T
     statusCode: number
 }
+

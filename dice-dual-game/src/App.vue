@@ -4,7 +4,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import api from './api/index'
+import api from './api/baseFetch'
 const hi = ref('2')
 onMounted(async () => {
     await api()

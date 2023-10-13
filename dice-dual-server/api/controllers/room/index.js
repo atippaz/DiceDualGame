@@ -10,10 +10,20 @@ export default (socket, store) => {
             }
         },
         createNewRoom: (req, res) => {
-            console.log(store.services.room)
             const idRoom = uuidv4()
-            if (store.services.room.createNewRoom(idRoom, req.body.roomName)) {
-                res.status(200).json(true)
+            const playerId = uuidv4()
+            const {playerName,roomName} = req.body 
+            if (store.services.room.createNewRoom(idRoom, roomName)) {
+                if (store.services.room.joinRoom(idRoom,playerId,playerName)) {
+                    res.status(200).json({roomId:idRoom,playerId:playerId})
+                }
+            }
+        },
+        joinRoom: (req, res) => {
+            const {roomId,playerName} = req.body 
+            const playerId = uuidv4()
+            if (store.services.room.joinRoom(roomId,playerId,playerName)) {
+                res.status(200).json({roomId:roomId,playerId:playerId})
             }
         },
     }
