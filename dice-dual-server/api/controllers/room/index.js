@@ -18,7 +18,10 @@ export default (socket, store) => {
                 if (
                     store.services.room.joinRoom(idRoom, playerId, playerName)
                 ) {
-                    responseData(res, 200, { roomId: idRoom, playerId: playerId })
+                    responseData(res, 200, {
+                        roomId: idRoom,
+                        playerId: playerId,
+                    })
                 }
             }
         },

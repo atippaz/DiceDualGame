@@ -17,11 +17,13 @@
                 <BoardGame />
             </v-col>
             <v-col cols="1">
-                <div style="
+                <div
+                    style="
                         background-color: rgb(240, 240, 240);
                         width: 100%;
                         height: 100%;
-                    ">
+                    "
+                >
                     sd
                 </div>
             </v-col>
@@ -47,7 +49,7 @@ if (!roomId) {
     router.push('/')
 }
 onMounted(() => {
-    roomApi.getOne(`roomId=${roomId}`).then(e => console.log(e))
+    roomApi.getOne(`roomId=${roomId}`).then((e) => console.log(e))
 })
 socket.on('sayhi', (_) => {
     data.value = _

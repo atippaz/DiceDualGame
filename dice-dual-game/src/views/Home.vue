@@ -4,20 +4,19 @@
     <v-text-field v-model="roomid"></v-text-field>
 
     <v-btn @click="goToDiceRoom">join game</v-btn>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
 
-    <div style="text-align: center;">
+    <div style="text-align: center">
         <v-btn @click="openLight" color="primary">red team round</v-btn>
         <v-btn @click="closeLight" color="warning">green team round</v-btn>
-
     </div>
 </template>
 
@@ -50,6 +49,5 @@ function openLight() {
 }
 function closeLight() {
     mqqtApi.closeLight()
-
 }
 </script>

@@ -13,7 +13,6 @@ function startUp() {
     setInterval(() => {
         socket.sayHi()
     }, 1000)
-
 }
 
 startUp()

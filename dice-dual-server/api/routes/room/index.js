@@ -3,7 +3,6 @@ import room from '../../controllers/room/index.js'
 
 const route = express.Router()
 const service = (_socket, store) => {
-
     const { onGetAll, createNewRoom, onGetById } = room(_socket, store)
     route.get('/gameRoom', onGetAll)
     route.post('/gameRoom', createNewRoom)

@@ -39,7 +39,7 @@ const roomServices = {
         roomState[idx].players[playerIdx].playerUuid = playerId
         roomState[idx].players[playerIdx].player = playerName
     },
-    deleteRoom(roomId) { },
+    deleteRoom(roomId) {},
     startGame: (roomId) => {
         const idx = roomState.findIndex((e) => e.roomId === roomId)
         if (idx === -1) return false

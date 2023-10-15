@@ -4,10 +4,10 @@ import { xoGameState, xoGameService } from './xoGame/index.js'
 export default {
     state: {
         room: roomState,
-        xoGame: xoGameState
+        xoGame: xoGameState,
     },
     services: {
         room: roomServices,
-        xoGame: xoGameService
+        xoGame: xoGameService,
     },
 }

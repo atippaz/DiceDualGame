@@ -11,9 +11,12 @@ const Api = () => {
             let queryString = ''
             if (path == null) return null
             return fetch(
-                `${path}/${controller}${param != null ? '/' + param : ''
+                `${path}/${controller}${
+                    param != null ? '/' + param : ''
                 }?${queryString}`
-            ).then((e) => e.json()).catch(er => console.log(er))
+            )
+                .then((e) => e.json())
+                .catch((er) => console.log(er))
         },
         post(payload: any) {
             return fetch('http://example.com/api/endpoint/', {
