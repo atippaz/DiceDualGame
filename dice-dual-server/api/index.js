@@ -22,7 +22,7 @@ const api = function (socket = null, store = null, mqqt) {
         mqqt.closeLight()
         res.send({ data: 'hi', statusCode: 200 })
     })
-    // server.use(server.use(routes(socket, store)))
+    server.use(routes(socket, store))
 
     return server.listen(port, (err, result) => {
         console.log('running in port http://localhost:' + port)
