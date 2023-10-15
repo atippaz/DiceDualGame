@@ -1,3 +1,7 @@
 import room from '@/api/room/index'
+import mqqt from '@/api/mqqt/index'
+
 const roomApi = room()
-export {roomApi}
+const mqqtApi = mqqt()
+
+export { roomApi, mqqtApi }

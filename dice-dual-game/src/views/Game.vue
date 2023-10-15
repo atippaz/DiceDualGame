@@ -17,13 +17,11 @@
                 <BoardGame />
             </v-col>
             <v-col cols="1">
-                <div
-                    style="
+                <div style="
                         background-color: rgb(240, 240, 240);
                         width: 100%;
                         height: 100%;
-                    "
-                >
+                    ">
                     sd
                 </div>
             </v-col>
@@ -35,14 +33,22 @@
 import { ref } from 'vue'
 import BoardGame from '@/components/boardGame/BoardGame.vue'
 import SideBoard from '@/components/boardGame/SideBoard.vue'
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router'
+import { roomApi } from '@/api/index'
 
-const route = useRoute();
-const roomId = route.query.test
+const route = useRoute()
+const router = useRouter()
+const roomId = route.query.roomId
 import Socket from '@/api/socket/index'
+import { onMounted } from 'vue'
 const socket = Socket().socket
 const data = ref('')
-
+if (!roomId) {
+    router.push('/')
+}
+onMounted(() => {
+    roomApi.getOne(`roomId=${roomId}`).then(e => console.log(e))
+})
 socket.on('sayhi', (_) => {
     data.value = _
 })

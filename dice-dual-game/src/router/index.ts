@@ -21,9 +21,9 @@ const routes = [
                 // route level code-splitting
                 // this generates a separate chunk (about.[hash].js) for this route
                 // which is lazy-loaded when the route is visited.
-                props: (route:any) => ( { query: route.query.roomId } ),
+                props: (route: any) => ({ query: route.query.roomId }),
                 component: () =>
-                    import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
+                    import(/* webpackChunkName: "home" */ '@/views/Game.vue'),
             },
         ],
     },

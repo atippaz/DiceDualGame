@@ -7,11 +7,12 @@
     "scripts": {
         "dev": "concurrently \"cd ./dice-dual-game && npm run dev\" \"cd ./dice-dual-server && npm run dev\"",
         "installs": "concurrently \"cd ./dice-dual-game && npm i\" \"cd ./dice-dual-server && npm i\"",
-        "format": "npx prettier --write ."
+        "format": "concurrently \"cd ./dice-dual-game && npx prettier --write .\" \"cd ./dice-dual-server && npx prettier --write .\""
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "concurrently": "^8.2.1"
+        "concurrently": "^8.2.1",
+        "mqtt": "^5.1.2"
     }
 }

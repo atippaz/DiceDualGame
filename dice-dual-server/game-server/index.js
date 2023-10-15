@@ -14,9 +14,7 @@ const initial = (store) => {
             origin: '*',
         },
     })
-    gameServer.on('diceMove',({dice:{value},playerId})=>{
-        
-    })
+    gameServer.on('diceMove', ({ dice: { value }, playerId }) => { })
     return {
         sendData(msg) {
             gameServer.emit('sendData', msg)
@@ -29,12 +27,12 @@ const initial = (store) => {
                     .getHours()
                     .toString()
                     .padStart(2, '0')} : ${d
-                    .getMinutes()
-                    .toString()
-                    .padStart(2, '0')}: ${d
-                    .getSeconds()
-                    .toString()
-                    .padStart(2, '0')}`
+                        .getMinutes()
+                        .toString()
+                        .padStart(2, '0')}: ${d
+                            .getSeconds()
+                            .toString()
+                            .padStart(2, '0')}`
             )
         },
     }
