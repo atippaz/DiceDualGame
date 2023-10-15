@@ -1,9 +1,9 @@
 import express from 'express'
-import room from '../../controllers/room/index.js'
+import { roomController } from '../../controllers/index.js'
 
 const route = express.Router()
 const service = (_socket, store) => {
-    const { onGetAll, createNewRoom, onGetById } = room(_socket, store)
+    const { onGetAll, createNewRoom, onGetById } = roomController(_socket, store)
     route.get('/gameRoom', onGetAll)
     route.post('/gameRoom', createNewRoom)
     route.get('/gameRoom/:roomId', onGetById)
