@@ -2,11 +2,10 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import routes from './routes/index.js'
 import cors from 'cors'
-
+import config from './config.js'
 const server = express()
 const port = process.env.PORT_API || 9000
-
-const api = function (socket = null, store = null, mqqt) {
+const api = async function (socket = null, store = null, mqqt) {
     server.use(bodyParser.json())
     server.use(bodyParser.urlencoded({ extended: true }))
     server.use(cors())
@@ -24,7 +23,18 @@ const api = function (socket = null, store = null, mqqt) {
     })
     server.use(routes(socket, store))
 
-    return server.listen(port, (err, result) => {
+    return server.listen(port, async (err, result) => {
+        try {
+            config()
+                .then(() => {
+                    console.log('db has Connect!')
+                })
+                .catch((er) => {
+                    console.log(er)
+                })
+        } catch (er) {
+            console.log(er)
+        }
         console.log('running in port http://localhost:' + port)
     })
 }

@@ -1,6 +1,6 @@
 import { GetRequest, ApiResult } from './IApi'
 const path = import.meta.env.VITE_API_PATH || ''
-
+const token = localStorage.getItem('userToken') || ''
 const Api = () => {
     return {
         get<T>(
@@ -13,24 +13,33 @@ const Api = () => {
             return fetch(
                 `${path}/${controller}${
                     param != null ? '/' + param : ''
-                }?${queryString}`
+                }?${queryString}`,
+                {
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
             )
                 .then((e) => e.json())
                 .catch((er) => console.log(er))
         },
-        post(payload: any) {
-            return fetch('http://example.com/api/endpoint/', {
+        post(controller: string, payload: any) {
+            return fetch(`${path}/${controller}`, {
                 method: 'post',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
                 },
 
                 //make sure to serialize your JSON body
                 body: JSON.stringify(payload),
-            }).then((response) => {
+            }).then(
+                (response) => response.json()
                 //do something awesome that makes the world a better place
-            })
+            )
         },
     }
 }

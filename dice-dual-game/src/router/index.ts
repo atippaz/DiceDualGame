@@ -1,6 +1,35 @@
 // Composables
-import { createRouter, createWebHistory } from 'vue-router'
+import {
+    NavigationGuardNext,
+    RouteLocationNormalized,
+    createRouter,
+    createWebHistory,
+} from 'vue-router'
 
+const checkTokenMiddleware = (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardNext
+) => {
+    const token = localStorage.getItem('userToken')
+    if (!token) {
+        next({ name: 'Login' }) // ถ้าไม่มี Token, ส่งผู้ใช้ไปหน้า Login
+    } else {
+        next()
+    }
+}
+const isLogin = (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardNext
+) => {
+    const token = localStorage.getItem('userToken')
+    if (token) {
+        next({ name: 'Home' }) // ถ้าไม่มี Token, ส่งผู้ใช้ไปหน้า Login
+    } else {
+        next()
+    }
+}
 const routes = [
     {
         path: '/',
@@ -24,6 +53,7 @@ const routes = [
                 props: (route: any) => ({ query: route.query.roomId }),
                 component: () =>
                     import(/* webpackChunkName: "home" */ '@/views/Game.vue'),
+                beforeEnter: checkTokenMiddleware,
             },
             {
                 path: '/xoRoom',
@@ -34,6 +64,7 @@ const routes = [
                 props: (route: any) => ({ query: route.query.roomId }),
                 component: () =>
                     import(/* webpackChunkName: "home" */ '@/views/XoRoom.vue'),
+                beforeEnter: checkTokenMiddleware,
             },
             {
                 path: '/test',
@@ -54,6 +85,29 @@ const routes = [
                     import(
                         /* webpackChunkName: "home" */ '@/views/XoLobby.vue'
                     ),
+                beforeEnter: checkTokenMiddleware,
+            },
+            {
+                path: '/register',
+                name: 'Register',
+                // route level code-splitting
+                // this generates a separate chunk (about.[hash].js) for this route
+                // which is lazy-loaded when the route is visited.
+                component: () =>
+                    import(
+                        /* webpackChunkName: "home" */ '@/views/Register.vue'
+                    ),
+                beforeEnter: isLogin,
+            },
+            {
+                path: '/login',
+                name: 'Login',
+                // route level code-splitting
+                // this generates a separate chunk (about.[hash].js) for this route
+                // which is lazy-loaded when the route is visited.
+                component: () =>
+                    import(/* webpackChunkName: "home" */ '@/views/Login.vue'),
+                beforeEnter: isLogin,
             },
         ],
     },
