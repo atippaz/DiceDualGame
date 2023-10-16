@@ -12,7 +12,6 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "concurrently": "^8.2.1",
-        "mqtt": "^5.1.2"
+        "concurrently": "^8.2.1"
     }
 }

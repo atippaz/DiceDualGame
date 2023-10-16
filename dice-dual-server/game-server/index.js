@@ -1,6 +1,7 @@
 import { Server as SocketIOServer } from 'socket.io'
 import express from 'express'
 import cors from 'cors'
+import xoGame from './xoGame/index.js'
 
 const initial = (store) => {
     const server = express()
@@ -15,6 +16,7 @@ const initial = (store) => {
         },
     })
     gameServer.on('diceMove', ({ dice: { value }, playerId }) => {})
+    xoGame(store, gameServer)
     return {
         sendData(msg) {
             gameServer.emit('sendData', msg)
