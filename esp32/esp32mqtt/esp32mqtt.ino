@@ -35,7 +35,7 @@ IPAddress subnet(255, 255, 255, 0);
 const int pin8 = 5;
 int LED3 = 18; // ขา D18
 int LED4 = 19; // ขา D18
-
+int LED5 = 17; // ขา D18
 
  
 int WiFiStatus;
@@ -139,9 +139,8 @@ void callback(char* topic, byte* message, unsigned int length){
       digitalWrite(LED3, HIGH);
       Serial.println("openLight");
       lcd.setCursor(0, 0); // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรตำแหน่งที่0 แถวที่ 1 เตรียมพิมพ์ข้อความ
-      lcd.print("this round"); //พิมพ์ข้อความ "LCD1602 I2c Test"
       lcd.setCursor(2, 1); // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรกำแหน่งที3 แถวที่ 2 เตรียมพิมพ์ข้อความ
-      lcd.print("red team"); //พิมพ์ข้อความ "myarduino.net"
+      lcd.print("enemy turn"); //พิมพ์ข้อความ "myarduino.net"
       delay(750);
       digitalWrite(LED3, LOW);  // สั่งให้ ขา D18 ปล่อยลอจิก 0 ไฟ LED ดับ
       digitalWrite(pin8, HIGH); 
@@ -155,14 +154,19 @@ void callback(char* topic, byte* message, unsigned int length){
       digitalWrite(LED3, HIGH);
       lcd.clear();
       lcd.setCursor(0, 0); // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรตำแหน่งที่0 แถวที่ 1 เตรียมพิมพ์ข้อความ
-      lcd.print("this round"); //พิมพ์ข้อความ "LCD1602 I2c Test"
       lcd.setCursor(2, 1); // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรกำแหน่งที3 แถวที่ 2 เตรียมพิมพ์ข้อความ
-      lcd.print("green team");
-      Serial.println("off");
+      lcd.print("your turn");
       delay(750);
-      digitalWrite(LED3, LOW);  // สั่งให้ ขา D18 ปล่อยลอจิก 0 ไฟ LED ดับ
+      digitalWrite(LED3, LOW); 
       digitalWrite(LED4, HIGH);
        //พิมพ์ข้อความ "myarduino.net"
+    }
+    else if(messageTemp == "error"){
+      digitalWrite(LED3, HIGH);
+      digitalWrite(LED5, HIGH);
+      delay(750);
+      digitalWrite(LED5, LOW);  
+      digitalWrite(LED3, LOW);
     }
   }
   

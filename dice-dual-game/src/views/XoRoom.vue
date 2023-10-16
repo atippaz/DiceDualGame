@@ -15,8 +15,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { xoGameApi, mqqtApi } from '@/api/index'
+import { ref, onBeforeUnmount } from 'vue'
+import { xoGameApi } from '@/api/index'
 import { useRouter, useRoute } from 'vue-router'
 import XoMainBoard from '@/components/xoGame/MainBoard.vue'
 
@@ -44,6 +44,9 @@ function initial() {
             })
     }
 }
+onBeforeUnmount(() => {
+    alert('want 2 leave ?')
+})
 
 // socket.on('sayhi', (mes) => {
 //     data.value = mes
