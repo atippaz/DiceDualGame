@@ -1,7 +1,11 @@
 import { GetRequest, ApiResult } from './IApi'
 const path = import.meta.env.VITE_API_PATH || ''
-const token = localStorage.getItem('userToken') || ''
+import { getContext } from '@/context'
+import { contextPluginSymbol } from '@/plugins/context'
+
 const Api = () => {
+    const context = getContext().inject(contextPluginSymbol)
+    const token = context.token.value
     return {
         get<T>(
             controller: string,
@@ -11,8 +15,7 @@ const Api = () => {
             let queryString = ''
             if (path == null) return null
             return fetch(
-                `${path}/${controller}${
-                    param != null ? '/' + param : ''
+                `${path}/${controller}${param != null ? '/' + param : ''
                 }?${queryString}`,
                 {
                     headers: {

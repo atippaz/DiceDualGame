@@ -1,21 +1,17 @@
 <template>
-    <v-container
-        fluid
-        class="w-100 h-100"
-        style="background-color: rgb(255, 234, 207)"
-    >
-        <v-row>
-            <div>
-                <div>Room Name:{{ detail.roomName }}</div>
-                <div>{{ detail }}</div>
+    <div v-if="detail" class="w-100 h-100" style="background-color: rgb(255, 234, 207)">
+        <div style="height: 10%;">
+            <div>Room Name:{{ detail.roomName }}</div>
+            <div>{{ detail }}</div>
+        </div>
+        <div style="height: 90%;">
+            <div class="w-100 h-100 d-flex justify-center align-center">
+                <div style="width: 400px; aspect-ratio: 1">
+                    <XoMainBoard />
+                </div>
             </div>
-        </v-row>
-        <v-row class="w-100 h-100 d-flex justify-center align-center">
-            <div style="width: 400px; aspect-ratio: 1">
-                <XoMainBoard />
-            </div>
-        </v-row>
-    </v-container>
+        </div>
+    </div>
 </template>
 
 <script lang="ts" setup>
@@ -29,7 +25,8 @@ const router = useRouter()
 const rout = useRoute()
 const roomId = ref(rout.query.roomId)
 const socket = Socket().socket
-const detail = ref()
+const detail = ref();
+(async () => { await initial() })()
 function initial() {
     if (roomId.value !== null && roomId.value !== '') {
         xoGameApi
@@ -47,7 +44,7 @@ function initial() {
             })
     }
 }
-initial()
+
 // socket.on('sayhi', (mes) => {
 //     data.value = mes
 // })

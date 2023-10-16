@@ -55,6 +55,27 @@ const routes = [
                     import(/* webpackChunkName: "home" */ '@/views/Game.vue'),
                 beforeEnter: checkTokenMiddleware,
             },
+
+
+            {
+                path: '/xoLobby',
+                name: 'XoLobby',
+                // route level code-splitting
+                // this generates a separate chunk (about.[hash].js) for this route
+                // which is lazy-loaded when the route is visited.
+                component: () =>
+                    import(
+                        /* webpackChunkName: "home" */ '@/views/XoLobby.vue'
+                    ),
+                beforeEnter: checkTokenMiddleware,
+            },
+
+        ],
+    },
+    {
+        path: '/',
+        component: () => import('@/layouts/default/ClearLayout.vue'),
+        children: [
             {
                 path: '/xoRoom',
                 name: 'XoRoom',
@@ -75,18 +96,7 @@ const routes = [
                 component: () =>
                     import(/* webpackChunkName: "home" */ '@/views/Test.vue'),
             },
-            {
-                path: '/xoLobby',
-                name: 'XoLobby',
-                // route level code-splitting
-                // this generates a separate chunk (about.[hash].js) for this route
-                // which is lazy-loaded when the route is visited.
-                component: () =>
-                    import(
-                        /* webpackChunkName: "home" */ '@/views/XoLobby.vue'
-                    ),
-                beforeEnter: checkTokenMiddleware,
-            },
+
             {
                 path: '/register',
                 name: 'Register',
@@ -110,7 +120,7 @@ const routes = [
                 beforeEnter: isLogin,
             },
         ],
-    },
+    }
 ]
 
 const router = createRouter({

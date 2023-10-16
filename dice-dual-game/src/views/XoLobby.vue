@@ -1,28 +1,15 @@
 <template>
     {{ data }}
-    {{ userId }}
+    {{ context.userId }}
     <v-container>
         <v-row>
             <v-col>
                 <div>xo Room List</div>
-                <v-data-table
-                    :headers="headers"
-                    :items="xoRoomList"
-                    item-value="name"
-                    class="elevation-1"
-                >
+                <v-data-table :headers="headers" :items="xoRoomList" item-value="name" class="elevation-1">
                     <template v-slot:bottom> </template>
                     <template v-slot:item.actions="{ item }">
-                        <v-btn
-                            v-if="item.canJoin"
-                            @click="joinRoom(item.roomId)"
-                            >Join Room</v-btn
-                        >
-                        <v-btn
-                            v-if="!item.canJoin"
-                            @click="viewRoom(item.roomId)"
-                            >View Room</v-btn
-                        >
+                        <v-btn v-if="item.canJoin" @click="joinRoom(item.roomId)">Join Room</v-btn>
+                        <v-btn v-if="!item.canJoin" @click="viewRoom(item.roomId)">View Room</v-btn>
                     </template>
                 </v-data-table>
             </v-col>
@@ -39,10 +26,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, inject } from 'vue'
+import { ref } from 'vue'
+import { getContext } from '@/context'
 import { contextPluginSymbol } from '@/plugins/context'
-const context = inject(contextPluginSymbol)
-const userId = context?.userId
+
+const _context = getContext()
+const context = _context.inject(contextPluginSymbol)
+
 import { xoGameApi, mqqtApi } from '@/api/index'
 import { useRouter } from 'vue-router'
 import Socket from '@/api/socket/index'

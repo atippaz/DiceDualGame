@@ -1,9 +1,9 @@
 import router from '@/router/index'
-import { inject } from 'vue'
+import { getContext } from '@/context'
 import _accountApi from '../api/account/index'
 import { contextPluginSymbol } from '@/plugins/context'
-import VueJwtDecode from 'vue-jwt-decode'
-const context = inject(contextPluginSymbol)
+import jwt_decode from "jwt-decode";
+const context = getContext().inject(contextPluginSymbol)
 const accountApi = _accountApi()
 function setToken(token: string) {
     localStorage.setItem('userToken', token)
@@ -15,9 +15,13 @@ function logout(): void {
 function login(username: string, password: string) {
     accountApi.login(username, password).then((e) => {
         if (e.statusCode === 200) {
-            const token = e.data.token
+            const token = e.data.token as string
             setToken(token)
-            const decoded = VueJwtDecode.decode(token)
+            const decoded = jwt_decode(token) as any
+            console.log(context)
+            console.log(token)
+            console.log(decoded)
+
             context?.updateToken(token)
             context?.updateUserId(decoded.userId)
             router.push({ name: 'Home' })
