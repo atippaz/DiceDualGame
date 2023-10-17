@@ -101,7 +101,7 @@ function initial() {
                     router.push({ name: 'XoLobby' })
                 } else {
                     detail.value = e.data as RoomGameData
-                    socket.join(roomId.value as string)
+                    socket.join(roomId.value as string,detail.value.started)
                     if (detail.value.started) {
                         xoGameApi
                             .getBoardGameData(roomId.value as string)
