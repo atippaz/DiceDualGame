@@ -32,6 +32,15 @@ const xoSocket = (store, socket) => {
                             .emit('getRequestGameData', response)
                     }
                 })
+
+_socket.on('requestBoardGameData',(roomId)=>{
+const { xoGame } = store.services
+                    const boardData = xoGame.getBoardData(roomId)
+                    if (boardData != null) {
+                        socket.to(roomId).emit('boardGameData', boardData)
+                    }
+                    socket.to(roomId).emit('boardGameData', {})
+})
                 _socket.on('requestGetBoardGame', (roomId) => {
                     const { xoGame } = store.services
                     const boardData = xoGame.getBoardData(roomId)
