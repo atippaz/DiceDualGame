@@ -1,8 +1,11 @@
 <template>
     <v-app>
         <default-bar />
-
-        <default-view />
+        <v-main class="h-100">
+            <div style="background-color: rgb(193, 193, 193)" class="h-100">
+                <default-view />
+            </div>
+        </v-main>
     </v-app>
 </template>
 

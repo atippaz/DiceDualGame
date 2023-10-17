@@ -1,10 +1,18 @@
 <template>
-    <div v-if="detail" class="w-100 h-100" style="background-color: rgb(255, 234, 207)">
-        <div style="height: 10%;">
-            <div>Room Name:{{ detail.roomName }}</div>
-            <div>{{ detail }}</div>
+    <div
+        v-if="detail"
+        class="w-100 h-100"
+        style="background-color: rgb(255, 234, 207)"
+    >
+        <div style="height: 10%">
+            <div>Room Name:{{ dataDetail.roomName }}</div>
+            {{ myData?.player }} VS {{ enemyData?.player }}
+            <div>{{ dataDetail }}</div>
+            <v-btn v-if="dataDetail.canStart" @click="startGame"
+                >startGame</v-btn
+            >
         </div>
-        <div style="height: 90%;">
+        <div style="height: 90%">
             <div class="w-100 h-100 d-flex justify-center align-center">
                 <div style="width: 400px; aspect-ratio: 1">
                     <XoMainBoard />
@@ -15,18 +23,57 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onBeforeUnmount } from 'vue'
+import { ref, onBeforeUnmount, computed } from 'vue'
 import { xoGameApi } from '@/api/index'
 import { useRouter, useRoute } from 'vue-router'
 import XoMainBoard from '@/components/xoGame/MainBoard.vue'
-
-import Socket from '@/api/socket/index'
+import { RoomGameData } from '@/interface/socket'
+import Socket from '@/api/socket/xoGame'
+import { getContext } from '@/context'
+import { contextPluginSymbol } from '@/plugins/context'
 const router = useRouter()
 const rout = useRoute()
 const roomId = ref(rout.query.roomId)
-const socket = Socket().socket
-const detail = ref();
-(async () => { await initial() })()
+const socket = Socket(callBackJoin, callBackRoomData)
+
+const myData = computed(
+    () =>
+        detail.value?.players.filter(
+            (e) =>
+                e.playerId ===
+                getContext().inject(contextPluginSymbol)!.userId.value
+        )[0]
+)
+const enemyData = computed(
+    () =>
+        detail.value?.players.filter(
+            (e) =>
+                e.playerId !==
+                getContext().inject(contextPluginSymbol)!.userId.value
+        )[0]
+)
+const dataDetail = computed(() => {
+    return {
+        roomName: detail.value?.roomName,
+        started: detail.value?.started,
+        canStart: detail.value?.canStart,
+    }
+})
+const detail = ref<RoomGameData>()
+;(async () => {
+    await initial()
+})()
+function callBackJoin(mes: string) {
+    console.log(mes)
+}
+function callBackRoomData(data: RoomGameData) {
+    detail.value = data
+
+    // console.log(data)
+}
+function startGame() {
+    alert('start')
+}
 function initial() {
     if (roomId.value !== null && roomId.value !== '') {
         xoGameApi
@@ -36,7 +83,8 @@ function initial() {
                 if (e.statusCode === 404) {
                     router.push({ name: 'XoLobby' })
                 } else {
-                    detail.value = e.data
+                    detail.value = e.data as RoomGameData
+                    socket.join(roomId.value as string)
                 }
             })
             .catch((e) => {
@@ -44,9 +92,9 @@ function initial() {
             })
     }
 }
-onBeforeUnmount(() => {
-    alert('want 2 leave ?')
-})
+// onBeforeUnmount(() => {
+//     alert('want 2 leave ?')
+// })
 
 // socket.on('sayhi', (mes) => {
 //     data.value = mes

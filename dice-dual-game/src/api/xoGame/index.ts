@@ -25,6 +25,11 @@ const xoGameApi = () => {
                 playerName,
             })!
         },
+        resumeGame: (roomId: string) => {
+            return api.post(`${controller}/resumeGame`, {
+                roomId,
+            })!
+        },
     }
 }
 export default xoGameApi

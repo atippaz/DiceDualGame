@@ -16,7 +16,7 @@ function hasRoom(roomId) {
 const roomState = []
 const roomServices = {
     hasRoom,
-    createNewRoom: (roomName, gameType, maxPlayer = 2) => {
+    createNewRoom: (roomName, gameType, playerId, maxPlayer = 2) => {
         const roomId = uuidv4()
 
         if (hasRoom(roomId)) return false
@@ -35,12 +35,12 @@ const roomServices = {
             gameType: gameType,
             players: player,
             maxPlayer: maxPlayer,
+            owner: playerId,
         })
         return { roomId, gameType, status: true }
     },
     joinRoom: (roomId, playerId, playerName) => {
         try {
-            console.log('player joining')
             const idx = roomState.findIndex((e) => e.roomId === roomId)
             if (idx === -1) return
             if (roomState[idx].players >= roomState[idx].maxPlayer) return
@@ -50,7 +50,6 @@ const roomServices = {
 
             roomState[idx].players[playerIdx].playerId = playerId
             roomState[idx].players[playerIdx].player = playerName
-            console.log('success')
             return true
         } catch (er) {
             console.error(er)
@@ -66,6 +65,38 @@ const roomServices = {
             return true
         }
         return false
+    },
+    hasPlayerInRoom(roomId, playerId) {
+        const idx = roomState.findIndex((e) => e.roomId === roomId)
+        if (idx === -1) return false
+        if (
+            roomState[idx].players.findIndex((e) => e.playerId === playerId) !==
+            -1
+        ) {
+            return true
+        }
+        return false
+    },
+    findIndexRoomWithId(roomId) {
+        return roomState.findIndex((e) => e.roomId === roomId)
+    },
+    getDataRoomGame(roomId, playerId) {
+        const idx = this.findIndexRoomWithId(roomId)
+        if (idx !== -1) {
+            const roomData = roomState[idx]
+            const players = roomData.players.filter((e) => e.playerId !== null)
+            const temp = JSON.parse(JSON.stringify(roomData))
+            temp.players = JSON.parse(JSON.stringify(players))
+            const response = {
+                ...temp,
+                canStart:
+                    temp.maxPlayer <= temp.players.length &&
+                    !temp.started &&
+                    temp.owner === playerId,
+            }
+            return JSON.parse(JSON.stringify(response))
+        }
+        return null
     },
 }
 export { roomState, roomServices }

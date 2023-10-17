@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { responseData } from '../../../helpers/index.js'
+
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { createUser, getUserOne } from '../../service/user.js'
@@ -29,8 +30,7 @@ export default (socket, store) => {
                     $or: [{ username }],
                 })
                 if (user) {
-                    return res.status(409).json({
-                        statusCode: 409,
+                    return responseData(res, 409, {
                         message: 'User already exists',
                     })
                 }
@@ -38,31 +38,42 @@ export default (socket, store) => {
                 const salt = await bcrypt.genSalt(10)
                 const userId = uuidv4()
                 const hashedPassword = await bcrypt.hash(password, salt)
-                const newUser = createUser({
+                const newUser = await createUser({
                     name,
                     username,
                     userId,
                     password: hashedPassword,
                 })
-                const token = jwt.sign(
-                    { userId: newUser._id, email: newUser.name },
+                const payload = { userId: newUser.userId, name: newUser.name }
+
+                jwt.sign(
+                    payload,
                     process.env.JWT_SECRET || 'test',
-                    { expiresIn: '24h' }
+                    { expiresIn: '24h' },
+                    (err, token) => {
+                        if (err) throw err
+                        return responseData(res, 201, {
+                            message: 'User created',
+                            token: token,
+                        })
+                    }
                 )
-                res.status(201).json({
-                    statusCode: 201,
-                    data: { message: 'User created', token },
-                })
             } catch (err) {
                 console.error(err)
-                res.status(500).json({ statusCode: 500, message: err.message })
+                return responseData(
+                    res,
+                    500,
+                    {
+                        message: err.message,
+                    },
+                    500
+                )
             }
         },
         async login(req, res) {
             try {
                 const { username, password } = await req.body
                 const user = await getUserOne({ username })
-                console.log(user)
                 if (!user) {
                     return res.status(401).json({ message: 'Invalid username' })
                 }

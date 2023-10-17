@@ -1,4 +1,6 @@
-const responseData = (res, statusCode, data) => {
-    return res.status(200).json({ statusCode: statusCode, data: data })
+const responseData = (res, statusCode, data, customResCode = 200) => {
+    return res
+        .status(customResCode)
+        .json({ statusCode: statusCode, data: data })
 }
 export { responseData }

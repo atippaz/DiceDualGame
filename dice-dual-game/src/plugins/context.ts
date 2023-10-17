@@ -2,22 +2,46 @@ import { type Plugin, type InjectionKey, ref, computed } from 'vue'
 export type PluginInstance = ReturnType<typeof $context>
 export const contextPluginSymbol: InjectionKey<PluginInstance> =
     Symbol('$context')
-import jwt_decode from "jwt-decode";
+import jwt_decode from 'jwt-decode'
 
 function $context() {
-    const _token = ref(localStorage.getItem('userToken') || '')
-    const _userId = ref(_token.value !== '' ? (jwt_decode(_token.value) as any).userId : '')
+    const _token = ref('')
+    const _userId = ref('')
     function updateToken(token: string) {
+        if (
+            token.trim() === undefined ||
+            token.trim() === null ||
+            token.trim() === 'undefined' ||
+            token.trim() === 'null' ||
+            token.trim() === ''
+        ) {
+            localStorage.removeItem('userToken')
+            return
+        }
+        console.log(token)
+
         _token.value = token
     }
     function updateUserId(userId: string) {
         _userId.value = userId
     }
+    function syncToken() {
+        _token.value = localStorage.getItem('userToken') || ''
+        _userId.value =
+            _token.value === '' ||
+            _token.value === undefined ||
+            _token.value === null
+                ? ''
+                : (jwt_decode(_token.value) as any).userId
+        console.log(_userId.value)
+    }
+    syncToken()
     return {
         token: computed(() => _token.value),
         userId: computed(() => _userId.value),
         updateUserId,
         updateToken,
+        syncToken,
     }
 }
 

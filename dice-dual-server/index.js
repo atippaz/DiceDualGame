@@ -10,9 +10,6 @@ function startUp() {
     const socket = gameServer(store)
     const mqqt = mqtt()
     Api(socket, store, mqqt)
-    setInterval(() => {
-        socket.sayHi()
-    }, 1000)
 }
 
 startUp()

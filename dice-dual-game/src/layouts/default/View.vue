@@ -1,5 +1,5 @@
 <template>
-    <v-main>
+    <v-main class="h-100 mx-8">
         <router-view />
     </v-main>
 </template>

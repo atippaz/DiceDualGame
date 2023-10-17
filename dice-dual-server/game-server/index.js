@@ -15,27 +15,14 @@ const initial = (store) => {
             origin: '*',
         },
     })
-    gameServer.on('diceMove', ({ dice: { value }, playerId }) => {})
-    xoGame(store, gameServer)
+    let initSocket = false
+    // gameServer.on('diceMove', ({ dice: { value }, playerId }) => {})
     return {
-        sendData(msg) {
-            gameServer.emit('sendData', msg)
-        },
-        sayHi() {
-            const d = new Date()
-            gameServer.emit(
-                'sayhi',
-                `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} : ${d
-                    .getHours()
-                    .toString()
-                    .padStart(2, '0')} : ${d
-                    .getMinutes()
-                    .toString()
-                    .padStart(2, '0')}: ${d
-                    .getSeconds()
-                    .toString()
-                    .padStart(2, '0')}`
-            )
+        createRoom: () => {
+            if (!initSocket) {
+                xoGame(store, gameServer).startServer()
+                initSocket = true
+            }
         },
     }
 }
