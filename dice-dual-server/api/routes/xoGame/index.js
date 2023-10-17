@@ -11,6 +11,8 @@ const service = (_socket, store) => {
         joinRoom,
         resumeGame,
         viewRoom,
+        startGame,
+        getBoardGameById,
     } = xoGameController(_socket, store)
 
     route.get('/xoGame/getAll', checkToken, convertJwt, onGetAll)
@@ -20,6 +22,13 @@ const service = (_socket, store) => {
     route.post('/xoGame/joinRoom', checkToken, convertJwt, joinRoom)
     route.post('/xoGame/resumeGame', checkToken, convertJwt, resumeGame)
     route.get('/xoGame/viewRoom/:roomId', checkToken, convertJwt, viewRoom)
+    route.post('/xoGame/startGame', checkToken, convertJwt, startGame)
+    route.get(
+        '/xoGame/getBoardGameById/:roomId',
+        checkToken,
+        convertJwt,
+        getBoardGameById
+    )
 
     return route
 }

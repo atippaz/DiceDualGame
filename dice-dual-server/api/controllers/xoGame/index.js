@@ -59,7 +59,27 @@ export default (socket, store) => {
             }
         },
         startGame(req, res) {
-            store.services.xoGame.createBoardGame(roomData.roomId)
+            const playerId = req.user.userId
+            const { roomId } = req.body
+            const roomData = store.services.room.getDataRoomGameByRef(
+                roomId,
+                playerId
+            )
+            if (
+                roomData !== null &&
+                roomData.canStart &&
+                roomData.owner === playerId
+            ) {
+                const boardGameData =
+                    store.services.xoGame.createBoardGame(roomId)
+                store.services.room.startRoom(roomId)
+                const random = Math.floor(Math.random() * roomData.maxPlayer)
+                const turnPlayerId = roomData.players[random].playerId
+                boardGameData.roundPlayerId = turnPlayerId
+                console.log(boardGameData)
+                return responseData(res, 200, boardGameData)
+            }
+            return responseData(res, 403, {})
         },
         createNewRoom: (req, res) => {
             const { roomName } = req.body
@@ -151,6 +171,11 @@ export default (socket, store) => {
             } else {
                 return responseData(res, 404, {})
             }
+        },
+        getBoardGameById(req, res) {
+            const { roomId } = req.params
+            const boardGameData = store.services.xoGame.getBoardData(roomId)
+            return responseData(res, 200, boardGameData)
         },
         exitRoom(req, res) {},
         deleteRoom(req, res) {},

@@ -78,15 +78,26 @@ const xoGameService = {
         return canMove
     },
     createBoardGame(roomId) {
-        xoGameState.push({
+        const newBoard = {
             board: Array(3)
                 .fill(null)
                 .map(() => Array(3).fill(null)),
             roomId: roomId,
-        })
+            roundPlayerId: null,
+            gameOver: false,
+        }
+        xoGameState.push(newBoard)
+        return newBoard
     },
     removeRoom(roomId) {
         //remove
+    },
+    getBoardData(roomId) {
+        const boardId = xoGameState.findIndex((e) => e.roomId === roomId)
+        if (boardId !== -1) {
+            return xoGameState[boardId]
+        }
+        return null
     },
 }
 const xoGameState = []

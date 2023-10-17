@@ -30,6 +30,14 @@ const xoGameApi = () => {
                 roomId,
             })!
         },
+        startGame(roomId: string) {
+            return api.post(`${controller}/startGame`, {
+                roomId,
+            })!
+        },
+        getBoardGameData(roomId: string) {
+            return api.get(`${controller}/getBoardGameById`, roomId)!
+        },
     }
 }
 export default xoGameApi

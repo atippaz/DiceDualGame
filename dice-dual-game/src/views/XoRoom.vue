@@ -8,9 +8,18 @@
             <div>Room Name:{{ dataDetail.roomName }}</div>
             {{ myData?.player }} VS {{ enemyData?.player }}
             <div>{{ dataDetail }}</div>
-            <v-btn v-if="dataDetail.canStart" @click="startGame"
+            <v-btn
+                v-if="dataDetail.canStart && !hideStartGameBtn"
+                @click="startGame"
                 >startGame</v-btn
             >
+            <div v-if="boardGameData">
+                {{
+                    boardGameData?.roundPlayerId === playerId
+                        ? 'Your Turn'
+                        : 'Enemy Turn'
+                }}
+            </div>
         </div>
         <div style="height: 90%">
             <div class="w-100 h-100 d-flex justify-center align-center">
@@ -27,22 +36,19 @@ import { ref, onBeforeUnmount, computed } from 'vue'
 import { xoGameApi } from '@/api/index'
 import { useRouter, useRoute } from 'vue-router'
 import XoMainBoard from '@/components/xoGame/MainBoard.vue'
-import { RoomGameData } from '@/interface/socket'
+import { RoomGameData, BoardGameData } from '@/interface/socket'
 import Socket from '@/api/socket/xoGame'
 import { getContext } from '@/context'
 import { contextPluginSymbol } from '@/plugins/context'
 const router = useRouter()
 const rout = useRoute()
 const roomId = ref(rout.query.roomId)
-const socket = Socket(callBackJoin, callBackRoomData)
-
+const boardGameData = ref<BoardGameData>()
+const socket = Socket(callBackJoin, callBackRoomData, callBackGetBoardGameData)
+const hideStartGameBtn = ref(false)
+const playerId = getContext().inject(contextPluginSymbol)!.userId.value
 const myData = computed(
-    () =>
-        detail.value?.players.filter(
-            (e) =>
-                e.playerId ===
-                getContext().inject(contextPluginSymbol)!.userId.value
-        )[0]
+    () => detail.value?.players.filter((e) => e.playerId === playerId)[0]
 )
 const enemyData = computed(
     () =>
@@ -68,11 +74,22 @@ function callBackJoin(mes: string) {
 }
 function callBackRoomData(data: RoomGameData) {
     detail.value = data
-
     // console.log(data)
 }
+function callBackGetBoardGameData(data: any) {
+    boardGameData.value = data as BoardGameData
+}
 function startGame() {
-    alert('start')
+    if (roomId.value !== null && roomId.value !== '') {
+        xoGameApi.startGame(roomId.value as string).then((e) => {
+            console.log('api call data', e.data)
+            if (e.statusCode === 200) {
+                hideStartGameBtn.value = true
+                socket.callAllUserGetBoardGameData(roomId.value as string)
+            }
+        })
+    }
+    // alert('start')
 }
 function initial() {
     if (roomId.value !== null && roomId.value !== '') {
@@ -85,6 +102,13 @@ function initial() {
                 } else {
                     detail.value = e.data as RoomGameData
                     socket.join(roomId.value as string)
+                    if (detail.value.started) {
+                        xoGameApi
+                            .getBoardGameData(roomId.value as string)
+                            .then((e) => {
+                                boardGameData.value = e.data as BoardGameData
+                            })
+                    }
                 }
             })
             .catch((e) => {

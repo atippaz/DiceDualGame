@@ -80,6 +80,19 @@ const roomServices = {
     findIndexRoomWithId(roomId) {
         return roomState.findIndex((e) => e.roomId === roomId)
     },
+    getPlayerInRoom(roomId) {
+        const idx = this.findIndexRoomWithId(roomId)
+        if (idx !== -1) {
+            const roomData = roomState[idx]
+            const players = JSON.parse(
+                JSON.stringify(
+                    roomData.players.filter((e) => e.playerId !== null)
+                )
+            )
+            return players
+        }
+        return null
+    },
     getDataRoomGame(roomId, playerId) {
         const idx = this.findIndexRoomWithId(roomId)
         if (idx !== -1) {
@@ -97,6 +110,32 @@ const roomServices = {
             return JSON.parse(JSON.stringify(response))
         }
         return null
+    },
+    getDataRoomGameByRef(roomId, playerId) {
+        const idx = this.findIndexRoomWithId(roomId)
+        if (idx !== -1) {
+            const roomData = roomState[idx]
+            const players = roomData.players.filter((e) => e.playerId !== null)
+            const temp = JSON.parse(JSON.stringify(roomData))
+            temp.players = JSON.parse(JSON.stringify(players))
+            const response = {
+                ...roomData,
+                canStart:
+                    roomData.maxPlayer <= temp.players.length &&
+                    !roomData.started &&
+                    roomData.owner === playerId,
+            }
+            return response
+        }
+        return null
+    },
+    startRoom(roomId) {
+        const idx = this.findIndexRoomWithId(roomId)
+        if (idx !== -1) {
+            roomState[idx].started = true
+            return true
+        }
+        return false
     },
 }
 export { roomState, roomServices }

@@ -12,3 +12,9 @@ export interface Player {
     player: string
     playerId: string
 }
+export interface BoardGameData {
+    board: Array<Array<string | null>>
+    gameOver: boolean
+    roomId: string
+    roundPlayerId: string
+}
