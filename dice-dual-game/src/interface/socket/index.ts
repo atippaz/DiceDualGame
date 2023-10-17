@@ -17,4 +17,11 @@ export interface BoardGameData {
     gameOver: boolean
     roomId: string
     roundPlayerId: string
+    canMove: boolean
+    dataSymbol: Array<SymbolData>
 }
+export interface SymbolData {
+    playerId: string
+    symbol: string
+}
+

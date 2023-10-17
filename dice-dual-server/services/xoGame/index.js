@@ -77,7 +77,8 @@ const xoGameService = {
 
         return canMove
     },
-    createBoardGame(roomId) {
+    createBoardGame(roomId, player) {
+        const symbol = player.map(e => { return { playerId: e.playerId, symbol: '' } })
         const newBoard = {
             board: Array(3)
                 .fill(null)
@@ -85,9 +86,20 @@ const xoGameService = {
             roomId: roomId,
             roundPlayerId: null,
             gameOver: false,
+            canMove: false,
+            dataSymbol: symbol
         }
         xoGameState.push(newBoard)
         return newBoard
+    },
+    updateSymbol(roomId, playerId, symbol) {
+        const boardId = xoGameState.findIndex((e) => e.roomId === roomId)
+        if (boardId !== -1) {
+            const playerIdx = xoGameState[boardId].dataSymbol.findIndex(e => e.playerId === playerId)
+            if (playerIdx != -1) {
+                xoGameState[boardId].dataSymbol[playerIdx].symbol = symbol
+            }
+        }
     },
     removeRoom(roomId) {
         //remove

@@ -11,17 +11,18 @@ export default (
     const context = getContext().inject(contextPluginSymbol)!
     let socket: Socket
     return {
-        join: (roomId: string,isStart:boolean) => {
+        join: (roomId: string, isStart: boolean) => {
             socket = SocketInstance().socket
             socket.emit('joinRoom', { roomId, playerId: context.userId.value })
             socket.on('joinRoom', (message) => {
                 joinRoom(message)
-   if(!isStart){
-        socket.emit('requestGameData', roomId)
-}
-else{
-socket.emit('requestBoardGameData', roomId)
-}
+                if (!isStart) {
+                    socket.emit('requestGameData', roomId)
+                } else {
+                    console.log('sdasd');
+
+                    socket.emit('requestBoardGameData', roomId)
+                }
             })
             socket.on('roomGameData', (data) => {
                 console.log('roomGameData', data)

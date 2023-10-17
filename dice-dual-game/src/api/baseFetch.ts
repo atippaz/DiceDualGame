@@ -15,7 +15,8 @@ const Api = () => {
             let queryString = ''
             if (path == null) return null
             return fetch(
-                `${path}/${controller}${param != null ? '/' + param : ''
+                `${path}/${controller}${
+                    param != null ? '/' + param : ''
                 }?${queryString}`,
                 {
                     headers: {

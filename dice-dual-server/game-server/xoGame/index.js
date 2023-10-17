@@ -17,7 +17,7 @@ const xoSocket = (store, socket) => {
                     )
                     if (response !== null) {
                         socket.to(_socket.id).emit('roomGameData', response)
-                        socket.to(roomId).emit('getRequestRoom', {})
+                        socket.to(roomId).emit('getRequestRoom', null)
                     }
                 })
                 _socket.on('getRequestGameData', (roomId) => {
@@ -27,27 +27,27 @@ const xoSocket = (store, socket) => {
                         _socket.userId
                     )
                     if (response !== null) {
-                        socket
+                        return socket
                             .to(_socket.id)
                             .emit('getRequestGameData', response)
                     }
                 })
 
-_socket.on('requestBoardGameData',(roomId)=>{
-const { xoGame } = store.services
+                _socket.on('requestBoardGameData', (roomId) => {
+                    const { xoGame } = store.services
                     const boardData = xoGame.getBoardData(roomId)
                     if (boardData != null) {
-                        socket.to(roomId).emit('boardGameData', boardData)
+                        return socket.to(_socket.id).emit('boardGameData', boardData)
                     }
-                    socket.to(roomId).emit('boardGameData', {})
-})
+                    return socket.to(_socket.id).emit('boardGameData', null)
+                })
                 _socket.on('requestGetBoardGame', (roomId) => {
                     const { xoGame } = store.services
                     const boardData = xoGame.getBoardData(roomId)
                     if (boardData != null) {
-                        socket.to(roomId).emit('boardGameData', boardData)
+                        return socket.to(roomId).emit('boardGameData', boardData)
                     }
-                    socket.to(roomId).emit('boardGameData', {})
+                    return socket.to(roomId).emit('boardGameData', null)
                 })
             })
         },
@@ -62,7 +62,7 @@ const { xoGame } = store.services
             )
             if (roomId !== -1) {
                 const roomData = store.state.room[roomIdx]
-                socket.to(roomId).emit('roomGameData', roomData)
+                return socket.to(roomId).emit('roomGameData', roomData)
             }
         },
     }

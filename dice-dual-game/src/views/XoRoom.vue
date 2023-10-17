@@ -1,30 +1,25 @@
 <template>
-    <div
-        v-if="detail"
-        class="w-100 h-100"
-        style="background-color: rgb(255, 234, 207)"
-    >
+    <div v-if="detail" class="w-100 h-100" style="background-color: rgb(255, 234, 207)">
         <div style="height: 10%">
             <div>Room Name:{{ dataDetail.roomName }}</div>
             {{ myData?.player }} VS {{ enemyData?.player }}
             <div>{{ dataDetail }}</div>
-            <v-btn
-                v-if="dataDetail.canStart && !hideStartGameBtn"
-                @click="startGame"
-                >startGame</v-btn
-            >
-            <div v-if="boardGameData">
+            <v-btn v-if="dataDetail.canStart && !hideStartGameBtn" @click="startGame">startGame</v-btn>
+            <div v-if="boardGameData != null && boardGameData">
                 {{
                     boardGameData?.roundPlayerId === playerId
-                        ? 'Your Turn'
-                        : 'Enemy Turn'
+                    ? 'Your Turn'
+                    : 'Enemy Turn'
                 }}
+
+                your sysbol is : {{ boardGameData.dataSymbol.find(e => e.playerId === playerId)!.symbol }}
             </div>
         </div>
         <div style="height: 90%">
             <div class="w-100 h-100 d-flex justify-center align-center">
                 <div style="width: 400px; aspect-ratio: 1">
-                    <XoMainBoard />
+                    <XoMainBoard :boardState="boardState"
+                        :canMove="boardGameData?.canMove && boardGameData.roundPlayerId === playerId" />
                 </div>
             </div>
         </div>
@@ -44,6 +39,7 @@ const router = useRouter()
 const rout = useRoute()
 const roomId = ref(rout.query.roomId)
 const boardGameData = ref<BoardGameData>()
+const boardState = ref()
 const socket = Socket(callBackJoin, callBackRoomData, callBackGetBoardGameData)
 const hideStartGameBtn = ref(false)
 const playerId = getContext().inject(contextPluginSymbol)!.userId.value
@@ -66,9 +62,9 @@ const dataDetail = computed(() => {
     }
 })
 const detail = ref<RoomGameData>()
-;(async () => {
-    await initial()
-})()
+    ; (async () => {
+        await initial()
+    })()
 function callBackJoin(mes: string) {
     console.log(mes)
 }
@@ -78,6 +74,7 @@ function callBackRoomData(data: RoomGameData) {
 }
 function callBackGetBoardGameData(data: any) {
     boardGameData.value = data as BoardGameData
+    boardState.value = boardGameData.value?.board
 }
 function startGame() {
     if (roomId.value !== null && roomId.value !== '') {
@@ -85,6 +82,8 @@ function startGame() {
             console.log('api call data', e.data)
             if (e.statusCode === 200) {
                 hideStartGameBtn.value = true
+                boardGameData.value = e.data
+                boardState.value = boardGameData.value?.board
                 socket.callAllUserGetBoardGameData(roomId.value as string)
             }
         })
@@ -101,12 +100,13 @@ function initial() {
                     router.push({ name: 'XoLobby' })
                 } else {
                     detail.value = e.data as RoomGameData
-                    socket.join(roomId.value as string,detail.value.started)
+                    socket.join(roomId.value as string, detail.value.started)
                     if (detail.value.started) {
                         xoGameApi
                             .getBoardGameData(roomId.value as string)
                             .then((e) => {
                                 boardGameData.value = e.data as BoardGameData
+                                boardState.value = boardGameData.value?.board
                             })
                     }
                 }

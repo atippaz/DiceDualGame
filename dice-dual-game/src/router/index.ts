@@ -56,7 +56,6 @@ const routes = [
                 beforeEnter: checkTokenMiddleware,
             },
 
-
             {
                 path: '/xoLobby',
                 name: 'XoLobby',
@@ -69,7 +68,6 @@ const routes = [
                     ),
                 beforeEnter: checkTokenMiddleware,
             },
-
         ],
     },
     {
@@ -120,7 +118,7 @@ const routes = [
                 beforeEnter: isLogin,
             },
         ],
-    }
+    },
 ]
 
 const router = createRouter({

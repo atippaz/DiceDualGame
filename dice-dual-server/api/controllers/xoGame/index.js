@@ -29,8 +29,8 @@ export default (socket, store) => {
                         ) !== -1
                     const canJoin =
                         e.maxPlayer >
-                            e.players.filter((y) => y.playerId !== null)
-                                .length &&
+                        e.players.filter((y) => y.playerId !== null)
+                            .length &&
                         !e.started &&
                         !hasThisPlayerInGame
                     const canResume = hasThisPlayerInGame && e.started
@@ -71,12 +71,21 @@ export default (socket, store) => {
                 roomData.owner === playerId
             ) {
                 const boardGameData =
-                    store.services.xoGame.createBoardGame(roomId)
+                    store.services.xoGame.createBoardGame(roomId, roomData.players)
+
                 store.services.room.startRoom(roomId)
                 const random = Math.floor(Math.random() * roomData.maxPlayer)
                 const turnPlayerId = roomData.players[random].playerId
+                roomData.players.forEach(e => {
+                    if (e.playerId === turnPlayerId) {
+                        store.services.xoGame.updateSymbol(roomId, turnPlayerId, 'X')
+                    }
+                    else {
+                        store.services.xoGame.updateSymbol(roomId, e.playerId, 'O')
+                    }
+                });
                 boardGameData.roundPlayerId = turnPlayerId
-                console.log(boardGameData)
+                boardGameData.canMove = turnPlayerId === playerId
                 return responseData(res, 200, boardGameData)
             }
             return responseData(res, 403, {})
@@ -162,8 +171,8 @@ export default (socket, store) => {
                     ...roomData,
                     canStart:
                         roomData.maxPlayer >=
-                            roomData.players.filter((e) => e.playerId !== null)
-                                .length &&
+                        roomData.players.filter((e) => e.playerId !== null)
+                            .length &&
                         !roomData.started &&
                         roomData.owner === playerId,
                 }
@@ -174,10 +183,12 @@ export default (socket, store) => {
         },
         getBoardGameById(req, res) {
             const { roomId } = req.params
+            const { userId } = req.user
             const boardGameData = store.services.xoGame.getBoardData(roomId)
+            boardGameData.canMove = boardGameData.roundPlayerId === userId
             return responseData(res, 200, boardGameData)
         },
-        exitRoom(req, res) {},
-        deleteRoom(req, res) {},
+        exitRoom(req, res) { },
+        deleteRoom(req, res) { },
     }
 }
