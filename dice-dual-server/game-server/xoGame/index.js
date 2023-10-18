@@ -2,6 +2,10 @@ import { createResponseObj } from '../../helpers/index.js'
 const xoSocket = (store, socket, mqqt, resolve) => {
     return {
         startServer: () => {
+            socket.on("connect", () => {
+                console.log("Connected to Socket.IO server");
+                resolve();
+            });
             socket.on('connection', (_socket) => {
                 _socket.on('joinRoom', ({ roomId, playerId }) => {
                     _socket.join(roomId)
@@ -206,7 +210,6 @@ const xoSocket = (store, socket, mqqt, resolve) => {
                         console.error(er)
                     }
                 })
-                resolve()
             })
         },
     }

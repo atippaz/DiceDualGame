@@ -162,8 +162,6 @@ export default (socket, store) => {
                 GameType.XoGame,
                 playerId
             )
-            console.log('init socket')
-            console.log(roomData);
             if (roomData.status) {
                 if (
                     store.services.room.joinRoom(
@@ -172,8 +170,6 @@ export default (socket, store) => {
                         playerName
                     )
                 ) {
-                    await socket.createRoom()
-                    console.log('init success')
                     return responseData(res, 200, {
                         roomId: roomData.roomId,
                         roomName: roomName,

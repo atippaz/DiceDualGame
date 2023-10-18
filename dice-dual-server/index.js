@@ -6,9 +6,10 @@ import store from './services/index.js'
 import env from 'dotenv'
 env.config()
 
-function startUp() {
+async function startUp() {
     const mqqt = mqtt()
     const socket = gameServer(store, mqqt)
+    await socket.createRoom()
     Api(socket, store, mqqt)
 }
 
