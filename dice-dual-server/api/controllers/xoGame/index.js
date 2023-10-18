@@ -170,7 +170,9 @@ export default (socket, store) => {
                         playerName
                     )
                 ) {
+                    console.log('init socket')
                     await socket.createRoom()
+                    console.log('init success')
                     return responseData(res, 200, {
                         roomId: roomData.roomId,
                         roomName: roomName,
