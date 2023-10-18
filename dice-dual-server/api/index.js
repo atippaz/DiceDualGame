@@ -21,6 +21,13 @@ const api = async function (socket = null, store = null, mqqt) {
         mqqt.closeLight()
         res.send({ data: 'hi', statusCode: 200 })
     })
+    server.get('/emergencyCleanData', (req, res) => {
+        store.function.cleanData()
+        res.status(200).json('ok')
+    })
+    server.get('/emergencyGetAllData', (req, res) => {
+        res.status(200).json(store.function.getAll())
+    })
     server.use(routes(socket, store))
 
     return server.listen(port, async (err, result) => {

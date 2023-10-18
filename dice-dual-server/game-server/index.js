@@ -2,8 +2,10 @@ import { Server as SocketIOServer } from 'socket.io'
 import express from 'express'
 import cors from 'cors'
 import xoGame from './xoGame/index.js'
+import chat from './chatRoom/index.js'
+import mqtt from './mqttControl/index.js'
 
-const initial = (store) => {
+const initial = (store, mqqt) => {
     const server = express()
     const port = process.env.PORT_GAME_SERVER || 888
     server.use(cors())
@@ -16,11 +18,19 @@ const initial = (store) => {
         },
     })
     let initSocket = false
+    let initChatRoom = false
+    mqtt(store, gameServer, mqtt).startServer()
     return {
         createRoom: () => {
             if (!initSocket) {
-                xoGame(store, gameServer).startServer()
+                xoGame(store, gameServer, mqqt).startServer()
                 initSocket = true
+            }
+        },
+        createChatRoom: () => {
+            if (!initChatRoom) {
+                chat(store, gameServer).startServer()
+                initChatRoom = true
             }
         },
     }

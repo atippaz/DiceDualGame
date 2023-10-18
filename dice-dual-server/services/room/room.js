@@ -57,7 +57,12 @@ const roomServices = {
             return false
         }
     },
-    deleteRoom(roomId) {},
+    deleteRoom(roomId) {
+        const index = roomState.findIndex((e) => e.roomId === roomId)
+        if (index !== -1) {
+            roomState.splice(index, 1)
+        }
+    },
     startGame: (roomId) => {
         const idx = roomState.findIndex((e) => e.roomId === roomId)
         if (idx === -1) return false
@@ -168,6 +173,9 @@ const roomServices = {
             return true
 
         return false
+    },
+    getRoomIsNotActive() {
+        return roomState.filter((e) => !e.isActive).map((e) => e.roomId)
     },
 }
 export { roomState, roomServices }

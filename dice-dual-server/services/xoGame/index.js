@@ -123,8 +123,12 @@ const xoGameService = {
             }
         }
     },
-    removeRoom(roomId) {
+    removeBoard(roomId) {
         //remove
+        const boardindex = xoGameState.findIndex((e) => e.roomId === roomId)
+        if (boardindex !== 1) {
+            xoGameState.splice(boardindex, 1)
+        }
     },
 
     getBoardData(roomId) {

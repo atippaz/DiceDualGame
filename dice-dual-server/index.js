@@ -7,8 +7,8 @@ import env from 'dotenv'
 env.config()
 
 function startUp() {
-    const socket = gameServer(store)
     const mqqt = mqtt()
+    const socket = gameServer(store, mqqt)
     Api(socket, store, mqqt)
 }
 

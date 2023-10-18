@@ -1,7 +1,8 @@
 import { createResponseObj } from '../../helpers/index.js'
-const xoSocket = (store, socket, mqqt) => {
+const xoSocket = (store, socket) => {
     return {
         startServer: () => {
+            console.log('room chat socket start')
             socket.on('connection', (_socket) => {
                 _socket.on('joinRoom', ({ roomId, playerId }) => {
                     _socket.join(roomId)

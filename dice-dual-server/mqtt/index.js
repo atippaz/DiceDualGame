@@ -1,5 +1,6 @@
 import mqtt from 'mqtt'
 const mqttServer = () => {
+    const idPlayerUserEsp = null
     const client = mqtt.connect('mqtt://broker.hivemq.com:1883')
     client.on('connect', () => {
         console.log('connext')
@@ -12,13 +13,22 @@ const mqttServer = () => {
     })
 
     return {
+        updateId: (playerId) => {
+            idPlayerUserEsp = playerId
+        },
+        getId: () => {
+            return idPlayerUserEsp
+        },
+        deleteId: () => {
+            idPlayerUserEsp = null
+        },
         openLight: () => {
+            console.log('esp32 enemy turn')
             client.publish('esp32', 'openLight')
-            console.log('openLight')
         },
         closeLight: () => {
+            console.log('esp32 your turn')
             client.publish('esp32', 'closeLight')
-            console.log('closeLight')
         },
     }
 }
