@@ -23,10 +23,18 @@ const initial = (store, mqqt) => {
     mqtt(store, gameServer, mqtt).startServer()
     return {
         createRoom: () => {
-            if (!initSocket) {
-                xoGame(store, gameServer, mqqt).startServer()
-                initSocket = true
-            }
+
+            return new Promise((resolve, reject) => {
+                {
+                    if (!initSocket) {
+                        xoGame(store, gameServer, mqqt, resolve).startServer()
+                        initSocket = true
+                    }
+                    else {
+                        resolve()
+                    }
+                }
+            })
         },
         createChatRoom: () => {
             if (!initChatRoom) {

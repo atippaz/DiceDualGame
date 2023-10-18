@@ -1,5 +1,5 @@
 import { createResponseObj } from '../../helpers/index.js'
-const xoSocket = (store, socket, mqqt) => {
+const xoSocket = (store, socket, mqqt, resolve) => {
     return {
         startServer: () => {
             socket.on('connection', (_socket) => {
@@ -206,6 +206,7 @@ const xoSocket = (store, socket, mqqt) => {
                         console.error(er)
                     }
                 })
+                resolve()
             })
         },
     }
