@@ -1,19 +1,34 @@
 <template>
-    <div class="rounded-xl w-100 h-100 pa-4" style="background-color: rgb(255, 77, 0)">
-        <div class="rounded-xl w-100 h-100 container" style="background-color: rgb(151, 177, 255)">
-            <div class="box box-child" v-for="i, indexI in boardState">
+    <div
+        class="rounded-xl w-100 h-100 pa-4"
+        style="background-color: rgb(255, 77, 0)"
+    >
+        <div
+            class="rounded-xl w-100 h-100 container"
+            style="background-color: rgb(151, 177, 255)"
+        >
+            <div class="box box-child" v-for="(i, indexI) in boardState">
                 <div class="container-row d-flex align-center">
-                    <div v-for="j, indexJ in i" class="box-row box-child-row h-100 w-100">
+                    <div
+                        v-for="(j, indexJ) in i"
+                        class="box-row box-child-row h-100 w-100"
+                    >
                         <div class="ma-1 w-100">
-                            <div class="rounded-xl h-100 d-flex align-center" style="background-color: rgb(0, 76, 255)"
-                                :class="canMove ? 'can-move' : 'can-not-move'" @click="move(indexI, indexJ)">
-                                <p style="
+                            <div
+                                class="rounded-xl h-100 d-flex align-center"
+                                style="background-color: rgb(0, 76, 255)"
+                                :class="canMove ? 'can-move' : 'can-not-move'"
+                                @click="move(indexI, indexJ)"
+                            >
+                                <p
+                                    style="
                                         font-size: 4em;
                                         color: white;
                                         text-align: center;
                                         font-weight: bold;
                                         width: 100%;
-                                    ">
+                                    "
+                                >
                                     {{ j }}
                                 </p>
                             </div>
@@ -25,12 +40,15 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { defineProps, ref, computed } from "vue";
+import { defineProps, ref, computed } from 'vue'
 
 const props = defineProps({
     boardState: Array<Array<null | string>>,
-    canMove: Boolean
-});
+    canMove: Boolean,
+})
+const emits = defineEmits<{
+    (e: 'move', target: { row: number | string; col: number | string }): void
+}>()
 const data = [
     ['X', '', ''],
     ['', 'X', ''],
@@ -40,7 +58,7 @@ const boardState = computed(() => props.boardState || data)
 const canMove = computed(() => props.canMove)
 function move(indexI: string | number, indexJ: string | number) {
     if (canMove.value) {
-        alert(`${indexI} , ${indexJ}`)
+        emits('move', { row: indexI, col: indexJ })
     }
 }
 </script>

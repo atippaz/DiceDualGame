@@ -31,7 +31,7 @@ export default (socket, store) => {
             if (store.services.room.joinRoom(roomId, playerId, playerName)) {
                 responseData(res, 200, { roomId: roomId, playerId: playerId })
             }
-            responseData(res, 404, {})
+            responseData(res, 404, null)
         },
         onGetById(req, res) {
             const { roomId } = req.param
@@ -39,7 +39,7 @@ export default (socket, store) => {
             if (room != null) {
                 responseData(res, 200, room)
             } else {
-                responseData(res, 404, {})
+                responseData(res, 404, null)
             }
         },
     }

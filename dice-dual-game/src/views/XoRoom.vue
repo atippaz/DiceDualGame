@@ -1,25 +1,46 @@
 <template>
-    <div v-if="detail" class="w-100 h-100" style="background-color: rgb(255, 234, 207)">
+    <div
+        v-if="detail"
+        class="w-100 h-100"
+        style="background-color: rgb(255, 234, 207)"
+    >
         <div style="height: 10%">
             <div>Room Name:{{ dataDetail.roomName }}</div>
             {{ myData?.player }} VS {{ enemyData?.player }}
             <div>{{ dataDetail }}</div>
-            <v-btn v-if="dataDetail.canStart && !hideStartGameBtn" @click="startGame">startGame</v-btn>
+            <v-btn
+                v-if="dataDetail.canStart && !hideStartGameBtn"
+                @click="startGame"
+                >startGame</v-btn
+            >
             <div v-if="boardGameData != null && boardGameData">
                 {{
                     boardGameData?.roundPlayerId === playerId
-                    ? 'Your Turn'
-                    : 'Enemy Turn'
+                        ? 'Your Turn'
+                        : 'Enemy Turn'
                 }}
 
-                your sysbol is : {{ boardGameData.dataSymbol.find(e => e.playerId === playerId)!.symbol }}
+                your symbol is :
+                {{
+                    boardGameData.dataSymbol.find(
+                        (e) => e.playerId === playerId
+                    )!.symbol
+                }}
+                {{ gameResultLabel }}
+                {{ timeOutLabel }}
             </div>
         </div>
         <div style="height: 90%">
             <div class="w-100 h-100 d-flex justify-center align-center">
                 <div style="width: 400px; aspect-ratio: 1">
-                    <XoMainBoard :boardState="boardState"
-                        :canMove="boardGameData?.canMove && boardGameData.roundPlayerId === playerId" />
+                    <XoMainBoard
+                        :boardState="boardState"
+                        :canMove="
+                            boardGameData?.canMove &&
+                            boardGameData.roundPlayerId === playerId
+                        "
+                        @move="move"
+                    />
                 </div>
             </div>
         </div>
@@ -40,7 +61,17 @@ const rout = useRoute()
 const roomId = ref(rout.query.roomId)
 const boardGameData = ref<BoardGameData>()
 const boardState = ref()
-const socket = Socket(callBackJoin, callBackRoomData, callBackGetBoardGameData)
+const timeOutLabel = ref('')
+const gameResultLabel = ref('')
+const socket = Socket(
+    callBackJoin,
+    callBackRoomData,
+    callBackGetBoardGameData,
+    callBackUpdateBoardCell,
+    callBackUpdateRoundPlayer,
+    callBackGameOver,
+    callBackCanNotMove
+)
 const hideStartGameBtn = ref(false)
 const playerId = getContext().inject(contextPluginSymbol)!.userId.value
 const myData = computed(
@@ -62,9 +93,9 @@ const dataDetail = computed(() => {
     }
 })
 const detail = ref<RoomGameData>()
-    ; (async () => {
-        await initial()
-    })()
+;(async () => {
+    await initial()
+})()
 function callBackJoin(mes: string) {
     console.log(mes)
 }
@@ -72,14 +103,49 @@ function callBackRoomData(data: RoomGameData) {
     detail.value = data
     // console.log(data)
 }
+function callBackUpdateBoardCell(data: {
+    target: { row: number | string; col: number | string }
+    value: string
+}) {
+    boardState.value[data.target.row][data.target.col] = data.value
+}
+function callBackCanNotMove(data: any) {
+    alert('cannot move')
+}
 function callBackGetBoardGameData(data: any) {
     boardGameData.value = data as BoardGameData
     boardState.value = boardGameData.value?.board
 }
+function callBackGameOver(data: any) {
+    if (data.isDraw) {
+        gameResultLabel.value = 'DRAW'
+    } else {
+        const winnerPlayer = data.playerId
+        const gameWinResult = winnerPlayer === playerId
+        gameResultLabel.value = gameWinResult ? 'You Win' : 'You Lose'
+    }
+    let countdown = 30
+    const timer = setInterval(() => {
+        timeOutLabel.value = `Leave room in ${countdown} s`
+        countdown--
+        if (countdown < 0) {
+            clearTimeout(timer)
+            router.push({ name: 'GameLobby' })
+        }
+    }, 1000)
+}
+function callBackUpdateRoundPlayer(_playerId: string) {
+    const newData = JSON.parse(JSON.stringify(boardGameData.value))
+    newData.roundPlayerId = _playerId
+    newData.canMove = _playerId === playerId
+    boardGameData.value = newData
+}
+function move(target: { row: string | number; col: string | number }) {
+    socket.move(roomId.value as string, target)
+}
 function startGame() {
     if (roomId.value !== null && roomId.value !== '') {
         xoGameApi.startGame(roomId.value as string).then((e) => {
-            console.log('api call data', e.data)
             if (e.statusCode === 200) {
                 hideStartGameBtn.value = true
                 boardGameData.value = e.data
@@ -95,7 +161,6 @@ function initial() {
         xoGameApi
             .getOne(roomId.value as string)
             .then((e) => {
-                console.log(e)
                 if (e.statusCode === 404) {
                     router.push({ name: 'XoLobby' })
                 } else {
@@ -112,15 +177,11 @@ function initial() {
                 }
             })
             .catch((e) => {
-                console.log(e)
+                console.error(e)
             })
     }
 }
-// onBeforeUnmount(() => {
-//     alert('want 2 leave ?')
-// })
-
-// socket.on('sayhi', (mes) => {
-//     data.value = mes
-// })
+onBeforeUnmount(() => {
+    socket.leaveRoom(roomId.value as string)
+})
 </script>

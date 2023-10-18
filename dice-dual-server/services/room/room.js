@@ -36,6 +36,7 @@ const roomServices = {
             players: player,
             maxPlayer: maxPlayer,
             owner: playerId,
+            isActive: true,
         })
         return { roomId, gameType, status: true }
     },
@@ -111,6 +112,13 @@ const roomServices = {
         }
         return null
     },
+    getRoomData(roomId) {
+        const idx = this.findIndexRoomWithId(roomId)
+        if (idx !== -1) {
+            return roomState[idx]
+        }
+        return null
+    },
     getDataRoomGameByRef(roomId, playerId) {
         const idx = this.findIndexRoomWithId(roomId)
         if (idx !== -1) {
@@ -135,6 +143,30 @@ const roomServices = {
             roomState[idx].started = true
             return true
         }
+        return false
+    },
+    removeOwner(roomId) {
+        const idx = this.findIndexRoomWithId(roomId)
+        if (idx !== -1) {
+            roomState[idx].owner = null
+            roomState[idx].isActive = false
+            return true
+        }
+        return false
+    },
+    isOwnerRoom(playerId) {
+        if (roomState.length === 0) return false
+
+        if (roomState.some((e) => e.owner === playerId && e.isActive))
+            return true
+
+        if (
+            roomState.some((e) =>
+                e.players.some((y) => y.playerId === playerId)
+            )
+        )
+            return true
+
         return false
     },
 }

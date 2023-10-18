@@ -6,6 +6,9 @@ const xoGameApi = () => {
         getAll: () => {
             return api.get(`${controller}/getAll`)!
         },
+        getCurrentRoom: () => {
+            return api.get(`${controller}/getCurrentRoom`)!
+        },
         getOne: (roomId: string) => {
             return api.get(`${controller}/getRoomId`, roomId)!
         },
@@ -37,6 +40,12 @@ const xoGameApi = () => {
         },
         getBoardGameData(roomId: string) {
             return api.get(`${controller}/getBoardGameById`, roomId)!
+        },
+        exitRoom(roomId: string) {
+            return api.post(`${controller}/exitRoom`, roomId)!
+        },
+        deleteRoom(roomId: string) {
+            return api.post(`${controller}/deleteRoom`, roomId)!
         },
     }
 }

@@ -8,7 +8,6 @@ const service = (_socket = null, store = null) => {
     route.use(room(_socket, store))
     route.use(xoGame(_socket, store))
     route.use(account(_socket, store))
-
     return route
 }
 

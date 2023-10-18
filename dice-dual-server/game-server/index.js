@@ -16,7 +16,6 @@ const initial = (store) => {
         },
     })
     let initSocket = false
-    // gameServer.on('diceMove', ({ dice: { value }, playerId }) => {})
     return {
         createRoom: () => {
             if (!initSocket) {

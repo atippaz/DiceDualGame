@@ -1,6 +1,7 @@
 const responseData = (res, statusCode, data, customResCode = 200) => {
-    return res
-        .status(customResCode)
-        .json({ statusCode: statusCode, data: data })
+    return res.status(customResCode).json(createResponseObj(statusCode, data))
 }
-export { responseData }
+const createResponseObj = (statusCode, data) => {
+    return { statusCode: statusCode, data: data }
+}
+export { responseData, createResponseObj }

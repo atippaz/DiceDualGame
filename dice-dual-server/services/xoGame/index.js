@@ -11,23 +11,27 @@ const xoGameService = {
         currentPlayer = 'X'
         gameOver = false
     },
-    checkWin(board) {
-        for (let i = 0; i < 3; i++) {
-            if (
-                board[i][0] !== null &&
-                board[i][0] === board[i][1] &&
-                board[i][0] === board[i][2]
-            ) {
-                gameOver = true
-                return board[i][0]
-            }
-            if (
-                board[0][i] !== null &&
-                board[0][i] === board[1][i] &&
-                board[0][i] === board[2][i]
-            ) {
-                gameOver = true
-                return board[0][i]
+    checkWin(boardData) {
+        const { board } = boardData
+        for (let indexI = 0; indexI < board.length; indexI++) {
+            const boardCol = board[indexI]
+            for (let indexJ = 0; indexJ < boardCol.length; indexJ++) {
+                if (
+                    board[indexJ][0] !== null &&
+                    board[indexJ][0] === board[indexJ][1] &&
+                    board[indexJ][0] === board[indexJ][2]
+                ) {
+                    boardData.gameOver = true
+                    return this.returnWinState(true, board[indexJ][0])
+                }
+                if (
+                    board[0][indexJ] !== null &&
+                    board[0][indexJ] === board[1][indexJ] &&
+                    board[0][indexJ] === board[2][indexJ]
+                ) {
+                    boardData.gameOver = true
+                    return this.returnWinState(true, board[0][indexJ])
+                }
             }
         }
 
@@ -36,8 +40,8 @@ const xoGameService = {
             board[0][0] === board[1][1] &&
             board[0][0] === board[2][2]
         ) {
-            gameOver = true
-            return board[0][0]
+            boardData.gameOver = true
+            return this.returnWinState(true, boardboard[0][0])
         }
 
         if (
@@ -45,23 +49,37 @@ const xoGameService = {
             board[0][2] === board[1][1] &&
             board[0][2] === board[2][0]
         ) {
-            gameOver = true
-            return board[0][2]
+            boardData.gameOver = true
+            return this.returnWinState(true, board[0][2])
         }
 
         // Check for a draw
         if (!board.flat().includes(null)) {
-            gameOver = true
-            return 'draw'
+            boardData.gameOver = true
+            return this.returnWinState(true, 'draw')
         }
 
-        return null
+        return this.returnWinState(true, null)
     },
-    makeMove(board, row, col) {
-        if (board[row][col] === null && !gameOver) {
-            board[row][col] = currentPlayer
-            checkWin()
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X'
+    returnWinState(state, symbol) {
+        return { moved: state, symbol: symbol }
+    },
+    makeMove(roomId, target, playerId) {
+        try {
+            const boardData = this.getBoardData(roomId)
+            const { board } = boardData
+            const { row, col } = target
+            if (board != null && board[row][col] === null && !board.gameOver) {
+                const symbol = boardData.dataSymbol.find(
+                    (x) => x.playerId === playerId
+                ).symbol
+                board[row][col] = symbol
+                return this.checkWin(boardData)
+            } else {
+                return this.returnWinState(false, null)
+            }
+        } catch (er) {
+            return this.returnWinState(false, null)
         }
     },
     listCanMove(board) {
@@ -78,7 +96,9 @@ const xoGameService = {
         return canMove
     },
     createBoardGame(roomId, player) {
-        const symbol = player.map(e => { return { playerId: e.playerId, symbol: '' } })
+        const symbol = player.map((e) => {
+            return { playerId: e.playerId, symbol: '' }
+        })
         const newBoard = {
             board: Array(3)
                 .fill(null)
@@ -87,7 +107,7 @@ const xoGameService = {
             roundPlayerId: null,
             gameOver: false,
             canMove: false,
-            dataSymbol: symbol
+            dataSymbol: symbol,
         }
         xoGameState.push(newBoard)
         return newBoard
@@ -95,7 +115,9 @@ const xoGameService = {
     updateSymbol(roomId, playerId, symbol) {
         const boardId = xoGameState.findIndex((e) => e.roomId === roomId)
         if (boardId !== -1) {
-            const playerIdx = xoGameState[boardId].dataSymbol.findIndex(e => e.playerId === playerId)
+            const playerIdx = xoGameState[boardId].dataSymbol.findIndex(
+                (e) => e.playerId === playerId
+            )
             if (playerIdx != -1) {
                 xoGameState[boardId].dataSymbol[playerIdx].symbol = symbol
             }
@@ -104,6 +126,7 @@ const xoGameService = {
     removeRoom(roomId) {
         //remove
     },
+
     getBoardData(roomId) {
         const boardId = xoGameState.findIndex((e) => e.roomId === roomId)
         if (boardId !== -1) {
