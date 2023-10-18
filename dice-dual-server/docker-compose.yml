@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  arcadegame:
+  arcadeserve:
     build: .
     environment:
       PORT_API: 9000
@@ -10,9 +10,9 @@ services:
       - '4500:4500'
       - '9000:9000'
     networks:
-      - mynetwork
+      - gamenetwork
 
-  webserver:
+  webserve:
     image: nginx
     ports:
       - "80:80"
@@ -20,8 +20,8 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     networks:
-      - mynetwork
+      - gamenetwork
 
 networks:
-  mynetwork:
+  gamenetwork:
     driver: bridge
