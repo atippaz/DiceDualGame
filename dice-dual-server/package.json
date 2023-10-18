@@ -8,7 +8,8 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "nodemon index",
         "start": "pm2 start index.js -n game-services",
-        "format": "npx prettier --write ."
+        "format": "npx prettier --write .",
+        "stop": "pm2 stop all"
     },
     "author": "",
     "license": "ISC",
