@@ -16,6 +16,7 @@ const initial = (store, mqqt) => {
         cors: {
             origin: '*',
         },
+        transports: ["polling", "websocket"],
     })
     let initSocket = false
     let initChatRoom = false
