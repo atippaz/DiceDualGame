@@ -4,8 +4,8 @@ export default () => {
     const socket: Socket = io(path, {
         secure: true,
         rejectUnauthorized: false,
-        path: "/socket.io/",
-        transports: ["websocket"]
+        path: '/socket.io/',
+        transports: ['websocket'],
     })
     return {
         socket,

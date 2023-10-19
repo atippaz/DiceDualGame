@@ -8,7 +8,7 @@ const port = process.env.PORT_API || 9000
 const api = async function (socket = null, store = null, mqqt) {
     server.use(bodyParser.json())
     server.use(bodyParser.urlencoded({ extended: true }))
-    server.use(cors())
+    server.use(cors({ origin: ['*.atipnasakun.online'] }))
 
     server.get('/', (req, res) => {
         res.send({ data: 'hi', statusCode: 200 })
