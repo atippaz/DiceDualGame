@@ -1,11 +1,8 @@
 import { createResponseObj } from '../../helpers/index.js'
-const xoSocket = (store, socket, mqqt, resolve) => {
+import { getUserOne } from '../../api/service/user.js'
+const xoSocket = (store, socket, mqqt) => {
     return {
         startServer: () => {
-            socket.on("connect", () => {
-                console.log("Connected to Socket.IO server");
-                resolve();
-            });
             socket.on('connection', (_socket) => {
                 _socket.on('joinRoom', ({ roomId, playerId }) => {
                     _socket.join(roomId)
@@ -58,20 +55,24 @@ const xoSocket = (store, socket, mqqt, resolve) => {
                 })
                 _socket.on('leaveRoom', (roomId) => {
                     _socket.leave(roomId)
+                    console.log(`${_socket.userId} leave room`)
                     socket.to(_socket.id).emit('leaveRoom', null)
                 })
-                _socket.on('requestBoardGameData', (roomId) => {
+                _socket.on('requestBoardGameData', async (roomId) => {
                     const { xoGame } = store.services
                     const boardData = xoGame.getBoardData(roomId)
                     const playerId = _socket.userId
                     boardData.canMove = boardData.roundPlayerId === playerId
                     if (boardData != null) {
+                        const temp = JSON.parse(JSON.stringify(boardData))
+                        await boardData.dataSymbol.forEach(async (e, i) => {
+                            temp.dataSymbol[i].playerName = await getUserOne({
+                                userId: e.playerId,
+                            }).name
+                        })
                         return socket
                             .to(_socket.id)
-                            .emit(
-                                'boardGameData',
-                                createResponseObj(200, boardData)
-                            )
+                            .emit('boardGameData', createResponseObj(200, temp))
                     }
                     return socket.to(_socket.id).emit('boardGameData', null)
                 })
@@ -82,25 +83,28 @@ const xoSocket = (store, socket, mqqt, resolve) => {
                         .emit('getBoardGame', createResponseObj(200, roomId))
                 })
 
-                _socket.on('getBoardGame', (roomId) => {
+                _socket.on('getBoardGame', async (roomId) => {
                     const { xoGame } = store.services
                     const playerId = _socket.userId
                     const boardData = xoGame.getBoardData(roomId)
                     boardData.canMove = boardData.roundPlayerId === playerId
-                    if (boardData != null) {
+                    const temp = JSON.parse(JSON.stringify(boardData))
+                    await boardData.dataSymbol.forEach(async (e, i) => {
+                        temp.dataSymbol[i].playerName = await getUserOne({
+                            userId: e.playerId,
+                        }).name
+                    })
+                    if (temp != null) {
                         return socket
                             .to(_socket.id)
 
-                            .emit(
-                                'boardGameData',
-                                createResponseObj(200, boardData)
-                            )
+                            .emit('boardGameData', createResponseObj(200, temp))
                     }
                     return socket
                         .to(_socket.id)
                         .emit('boardGameData', createResponseObj(404, null))
                 })
-                _socket.on('move', (payload) => {
+                _socket.on('move', async (payload) => {
                     const { roomId, target } = payload
                     const { xoGame, room } = store.services
                     const playerId = _socket.userId
@@ -200,13 +204,13 @@ const xoSocket = (store, socket, mqqt, resolve) => {
                                         'canNotMove',
                                         createResponseObj(200, null)
                                     )
-                                room.removeOwner(roomId)
+                                // room.removeOwner(roomId)
                                 boardData = reveaseData
                             }
                             return
                         }
                     } catch (er) {
-                        boardData = reveaseData
+                        xoGame.assignDataToRoom(roomId, reveaseData)
                         console.error(er)
                     }
                 })

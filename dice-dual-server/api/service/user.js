@@ -3,7 +3,7 @@ const getUserAll = async () => {
     return await User.find().select('-password')
 }
 const getUserOne = async (param) => {
-    const user = await User.findOne(param).select('')
+    const user = await User.findOne(param).select('-password')
     return user
 }
 const createUser = async (data) => {
@@ -14,4 +14,5 @@ const createUser = async (data) => {
         console.error(er)
     }
 }
+
 export { getUserAll, getUserOne, createUser }

@@ -16,24 +16,19 @@ const initial = (store, mqqt) => {
         cors: {
             origin: '*',
         },
-        transports: ["polling", "websocket"],
+        transports: ['polling', 'websocket'],
     })
     let initSocket = false
     let initChatRoom = false
     mqtt(store, gameServer, mqtt).startServer()
     return {
-        createRoom: () => new Promise((resolve, reject) => {
-            {
-                console.log('start socket init');
-                if (!initSocket) {
-                    xoGame(store, gameServer, mqqt, resolve).startServer()
-                    initSocket = true
-                }
-                else {
-                    resolve()
-                }
+        createRoom: () => {
+            console.log('start socket init')
+            if (!initSocket) {
+                xoGame(store, gameServer, mqqt).startServer()
+                initSocket = true
             }
-        }),
+        },
         createChatRoom: () => {
             if (!initChatRoom) {
                 chat(store, gameServer).startServer()

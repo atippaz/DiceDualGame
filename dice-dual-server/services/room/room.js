@@ -43,12 +43,12 @@ const roomServices = {
     joinRoom: (roomId, playerId, playerName) => {
         try {
             const idx = roomState.findIndex((e) => e.roomId === roomId)
-            if (idx === -1) return
-            if (roomState[idx].players >= roomState[idx].maxPlayer) return
+            if (idx === -1) return false
+            if (roomState[idx].players >= roomState[idx].maxPlayer) return false
             const playerIdx = roomState[idx].players.findIndex(
                 (e) => e.playerId === null
             )
-
+            if (playerIdx === -1) return false
             roomState[idx].players[playerIdx].playerId = playerId
             roomState[idx].players[playerIdx].player = playerName
             return true
@@ -98,6 +98,18 @@ const roomServices = {
             return players
         }
         return null
+    },
+    isMaxRoom(roomId) {
+        const idx = this.findIndexRoomWithId(roomId)
+        if (idx !== -1) {
+            const roomData = roomState[idx]
+            const players = JSON.parse(
+                JSON.stringify(
+                    roomData.players.filter((e) => e.playerId !== null)
+                )
+            )
+            return players.length >= roomData.maxPlayer
+        }
     },
     getDataRoomGame(roomId, playerId) {
         const idx = this.findIndexRoomWithId(roomId)

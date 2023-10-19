@@ -9,10 +9,10 @@ env.config()
 async function startUp() {
     const mqqt = mqtt()
     const socket = gameServer(store, mqqt)
-   
+
     Api(socket, store, mqqt)
-await socket.createRoom()
-console.log('success')
+    await socket.createRoom()
+    console.log('success')
 }
 
 startUp()

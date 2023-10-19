@@ -10,6 +10,11 @@
                     item-value="name"
                     class="elevation-1"
                 >
+                    <template v-slot:item.started="{ item }">
+                        <div>
+                            {{ item.started ? 'starting' : 'waiting' }}
+                        </div>
+                    </template>
                     <template v-slot:bottom> </template>
                     <template v-slot:item.actions="{ item }">
                         <v-btn
@@ -38,6 +43,7 @@
                     class="elevation-1"
                 >
                     <template v-slot:bottom> </template>
+
                     <template v-slot:item.actions="{ item }">
                         <v-btn
                             v-if="item.canJoin"
@@ -80,10 +86,9 @@ const context = _context.inject(contextPluginSymbol)
 import { xoGameApi, mqqtApi } from '@/api/index'
 import { useRouter } from 'vue-router'
 import Socket from '@/api/socket/index'
-import { time } from 'console'
 const router = useRouter()
 
-const socket = Socket().socket
+// const socket = Socket().socket
 const data = ref('')
 const roomName = ref('')
 const roomid = ref('')
@@ -102,6 +107,8 @@ const headers = ref([
         // sortable: false,
         key: 'player',
     },
+    { title: 'status', key: 'started', sortable: false },
+
     { title: '', key: 'actions', sortable: false },
 ])
 let timer: any = null
@@ -143,9 +150,9 @@ function initDataRoom() {
         timer = setInterval(initDataRoom, 1000 * 60 * 5)
     }
 }
-socket.on('sayhi', (mes) => {
-    data.value = mes
-})
+// socket.on('sayhi', (mes) => {
+//     data.value = mes
+// })
 
 function viewRoom(id: string) {
     router.push({ name: 'XoRoom', query: { roomId: id } })
@@ -169,15 +176,14 @@ function createRoom() {
 function resume(id: string) {
     xoGameApi.resumeGame(id).then((e) => {
         if (e.data) {
-            xoGameApi.joinRoom(id, 'testId').then((e) => {
-                if (e.statusCode === 200) {
-                    router.push({ name: 'XoRoom', query: { roomId: id } })
-                } else if (e.statusCode === 403) {
-                    alert('room full')
-                } else if (e.statusCode === 404) {
-                    alert('error not found')
-                }
-            })
+            router.push({ name: 'XoRoom', query: { roomId: id } })
+        } else {
+            if (e.statusCode === 403) {
+                alert('room full')
+                initDataRoom()
+            } else if (e.statusCode === 404) {
+                alert('error not found')
+            }
         }
     })
 }
@@ -190,6 +196,7 @@ function joinRoom(id: string) {
                     router.push({ name: 'XoRoom', query: { roomId: id } })
                 } else if (e.statusCode === 403) {
                     alert('room full')
+                    resume(id)
                 }
             })
         }

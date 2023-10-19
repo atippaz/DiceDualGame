@@ -31,8 +31,10 @@ export default (
                 socket.on('joinRoom', (message) => {
                     joinRoom(message)
                     if (!isStart) {
+                        //
                         socket.emit('requestGameData', roomId)
                     } else {
+                        //
                         socket.emit('requestBoardGameData', roomId)
                     }
                 })
@@ -73,17 +75,17 @@ export default (
             }
         },
         callAllUserGetBoardGameData(roomId: string) {
-            socket.emit('requestGetBoardGame', roomId)
+            if (socket !== null) socket.emit('requestGetBoardGame', roomId)
         },
 
         move(
             roomId: string,
             target: { row: number | string; col: number | string }
         ) {
-            socket.emit('move', { roomId, target })
+            if (socket !== null) socket.emit('move', { roomId, target })
         },
         leaveRoom(roomId: string) {
-            socket.emit('leaveRoom', roomId)
+            if (socket !== null) socket.emit('leaveRoom', roomId)
         },
     }
 }
