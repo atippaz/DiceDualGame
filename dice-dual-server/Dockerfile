@@ -8,6 +8,6 @@ RUN npm install
 
 COPY . .
 # COPY nginx.conf /etc/nginx/conf.d/nginx.conf
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
 EXPOSE 9000
 EXPOSE 4500

@@ -7,8 +7,11 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "nodemon index",
-        "start": "node index.js",
-        "format": "npx prettier --write ."
+        "start": "pm2 start index.js --name GameService && pm2 list",
+        "format": "npx prettier --write .",
+        "stop": "pm2 stop all && pm2 list",
+        "list": "pm2 list",
+        "dall": "pm2 delete all"
     },
     "author": "",
     "license": "ISC",
@@ -22,6 +25,7 @@
         "mongoose": "^7.6.2",
         "mqtt": "^5.1.2",
         "nodemon": "^3.0.1",
+        "pm2": "^5.3.0",
         "prettier": "^3.0.3",
         "socket.io": "^4.7.2",
         "uuid": "^9.0.1"
