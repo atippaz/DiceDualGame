@@ -1,0 +1,18 @@
+เริ่มการ deploy จาก vps เเล้วทำการ sium เข้าไปใน server 
+จากนั้นเริ่มทำการติดตั้ง docker เเละ nginx
+docker -> มีเอาไว้ทำการ จำลองเเล้วรันเเอป คล้ายๆ  vm ware
+nginx -> ทำการ config ให้รับ http หรือ block 
+เเละ access  เเค่บาง http เเล้วทำการ map port เข้าไปใน port ภายใน
+สามารถใช้ทำ load balnce ได้ 
+การรัน จะใช้ docker compose up รัน 
+
+ปัญหาที่เกิด ไม่สามารถเอา ssl มาติดตั้งที่ nginx ได้ เนื่องจากเข้าถึงไฟล์ไม่ได้ ติด permission
+วิธีเเก้จึงทำการ clone file อังกล่าวออกมาไว้ในที่ ที่เรา สามารถ access ได้ เเล้วเเชร์ volumn เข้า docker ให้ nginx ไปทำการติดตั้ง ssl
+จากนั้น api ของเราจะเป็น https ทำให้ เว็บทั่วไปที่ deploy ด้านนอกที่เป็น https สามารถทำการ get ได้
+
+ทำการ เปิด port firewall ของเครื่อง vps ที่ console ของ ec2 
+
+sudo mkdir -p /etc/letsencrypt/ssl #สร้างโฟลเดอร์เอาไว้
+
+sudo cp -r -L /etc/letsencrypt/live/example.com/fullchain.pem /etc/letsencrypt/ssl/ #ก็อปไฟล์นั้น ไปไว้ในโฟลเดอร์ที่เราสร้าง
+sudo cp -r -L /etc/letsencrypt/live/example.com/privkey.pem /etc/letsencrypt/ssl/#ก็อปไฟล์นั้น ไปไว้ในโฟลเดอร์ที่เราสร้าง
