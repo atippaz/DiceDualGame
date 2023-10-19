@@ -18,7 +18,6 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - 
       - ./nginx.conf:/etc/nginx/nginx.conf
       - /etc/letsencrypt/live/gameapi.atipnasakun.online:/cert
     networks:
