@@ -155,7 +155,7 @@ function callBackGameOver(data: any) {
         timeOutLabel.value = `Leave room in ${countdown} s`
         countdown--
         if (countdown <= 0) {
-            router.push({ name: 'GameLobby' })
+            router.push({ name: 'XoLobby' })
             clearTimeout(timer)
         }
     }, 1000)
