@@ -167,7 +167,7 @@ const roomServices = {
 
         if (
             roomState.some((e) =>
-                e.players.some((y) => y.playerId === playerId)
+                e.players.some((y) => y.playerId === playerId && e.isActive)
             )
         )
             return true
