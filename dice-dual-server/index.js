@@ -11,6 +11,7 @@ async function startUp() {
     const socket = gameServer(store, mqqt)
     await socket.createRoom()
     Api(socket, store, mqqt)
+console.log('success')
 }
 
 startUp()
