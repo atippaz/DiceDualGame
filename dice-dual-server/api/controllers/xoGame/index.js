@@ -1,5 +1,6 @@
 import { responseData } from '../../../helpers/index.js'
 import { GameType } from '../../../constant/index.js'
+import { getUserOne } from '../../service/user.js'
 export default (socket, store) => {
     return {
         hasRoom: (req, res) => {
@@ -9,7 +10,9 @@ export default (socket, store) => {
                     res,
                     200,
                     store.state.room
-                        .filter((e) => e.gameType == GameType.XoGame)
+                        .filter(
+                            (e) => e.gameType == GameType.XoGame && e.isActive
+                        )
                         .findIndex((e) => e.roomId === roomId) !== -1
                 )
             } catch (er) {
@@ -33,8 +36,8 @@ export default (socket, store) => {
                         ) !== -1
                     const canJoin =
                         e.maxPlayer >
-                        e.players.filter((y) => y.playerId !== null)
-                            .length &&
+                            e.players.filter((y) => y.playerId !== null)
+                                .length &&
                         !e.started &&
                         !hasThisPlayerInGame
                     const canResume = hasThisPlayerInGame && e.started
@@ -80,8 +83,8 @@ export default (socket, store) => {
                         ) !== -1
                     const canJoin =
                         e.maxPlayer >
-                        e.players.filter((y) => y.playerId !== null)
-                            .length &&
+                            e.players.filter((y) => y.playerId !== null)
+                                .length &&
                         !e.started &&
                         !hasThisPlayerInGame
                     const canResume = hasThisPlayerInGame && e.started
@@ -124,28 +127,32 @@ export default (socket, store) => {
                     roomId,
                     roomData.players
                 )
-
-                store.services.room.startRoom(roomId)
-                const random = Math.floor(Math.random() * roomData.maxPlayer)
-                const turnPlayerId = roomData.players[random].playerId
-                roomData.players.forEach((e) => {
-                    if (e.playerId === turnPlayerId) {
-                        store.services.xoGame.updateSymbol(
-                            roomId,
-                            turnPlayerId,
-                            'X'
-                        )
-                    } else {
-                        store.services.xoGame.updateSymbol(
-                            roomId,
-                            e.playerId,
-                            'O'
-                        )
-                    }
-                })
-                boardGameData.roundPlayerId = turnPlayerId
-                boardGameData.canMove = turnPlayerId === playerId
-                return responseData(res, 200, boardGameData)
+                if (boardGameData !== null) {
+                    store.services.room.startRoom(roomId)
+                    const random = Math.floor(
+                        Math.random() * roomData.maxPlayer
+                    )
+                    const turnPlayerId = roomData.players[random].playerId
+                    roomData.players.forEach((e) => {
+                        if (e.playerId === turnPlayerId) {
+                            store.services.xoGame.updateSymbol(
+                                roomId,
+                                turnPlayerId,
+                                'X'
+                            )
+                        } else {
+                            store.services.xoGame.updateSymbol(
+                                roomId,
+                                e.playerId,
+                                'O'
+                            )
+                        }
+                    })
+                    boardGameData.roundPlayerId = turnPlayerId
+                    boardGameData.canMove = turnPlayerId === playerId
+                    return responseData(res, 200, boardGameData)
+                }
+                return responseData(res, 404, null)
             }
             return responseData(res, 403, null)
         },
@@ -204,7 +211,8 @@ export default (socket, store) => {
                 roomId,
                 playerId
             )
-            if (response !== null) return responseData(res, 200, response)
+            if (response !== null && response.isActive)
+                return responseData(res, 200, response)
             return responseData(res, 404, null)
         },
         resumeGame(req, res) {
@@ -212,10 +220,11 @@ export default (socket, store) => {
             const user = req.user
             const playerId = user.userId
             if (store.services.room.hasPlayerInRoom(roomId, playerId)) {
-                socket.join(roomId)
-                return responseData(res, 200, null)
+                return responseData(res, 200, true)
+            } else if (store.services.room.isMaxRoom(roomId)) {
+                return responseData(res, 403, false)
             }
-            return responseData(res, 404, null)
+            return responseData(res, 404, false)
         },
         viewRoom(req, res) {
             const { roomId } = req.params
@@ -230,8 +239,8 @@ export default (socket, store) => {
                     ...roomData,
                     canStart:
                         roomData.maxPlayer >=
-                        roomData.players.filter((e) => e.playerId !== null)
-                            .length &&
+                            roomData.players.filter((e) => e.playerId !== null)
+                                .length &&
                         !roomData.started &&
                         roomData.owner === playerId,
                 }
@@ -240,14 +249,20 @@ export default (socket, store) => {
                 return responseData(res, 404, null)
             }
         },
-        getBoardGameById(req, res) {
+        async getBoardGameById(req, res) {
             const { roomId } = req.params
             const { userId } = req.user
             const boardGameData = store.services.xoGame.getBoardData(roomId)
             boardGameData.canMove = boardGameData.roundPlayerId === userId
-            return responseData(res, 200, boardGameData)
+            const temp = JSON.parse(JSON.stringify(boardGameData))
+            await boardGameData.dataSymbol.forEach(async (e, i) => {
+                temp.dataSymbol[i].playerName = await getUserOne({
+                    userId: e.playerId,
+                }).name
+            })
+            return responseData(res, 200, temp)
         },
-        exitRoom(req, res) { },
-        deleteRoom(req, res) { },
+        exitRoom(req, res) {},
+        deleteRoom(req, res) {},
     }
 }

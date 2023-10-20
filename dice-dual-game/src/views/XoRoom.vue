@@ -13,7 +13,7 @@
                 @click="startGame"
                 >startGame</v-btn
             >
-            <div v-if="boardGameData != null && boardGameData">
+            <div v-if="boardGameData != null && boardGameData && yourPlayer">
                 {{
                     boardGameData?.roundPlayerId === playerId
                         ? 'Your Turn'
@@ -29,6 +29,14 @@
                 {{ gameResultLabel }}
                 {{ timeOutLabel }}
             </div>
+            <div v-else-if="boardGameData != null && boardGameData">
+                <span v-for="dataplayer in boardGameData.dataSymbol">
+                    player : {{ dataplayer.playerName }} use :
+                    {{ dataplayer.symbol }}
+                </span>
+            </div>
+            {{ gameResultLabel }}
+            {{ timeOutLabel }}
         </div>
         <div style="height: 90%">
             <div class="w-100 h-100 d-flex justify-center align-center">
@@ -72,6 +80,7 @@ const socket = Socket(
     callBackGameOver,
     callBackCanNotMove
 )
+const yourPlayer = ref(true)
 const hideStartGameBtn = ref(false)
 const playerId = getContext().inject(contextPluginSymbol)!.userId.value
 const myData = computed(
@@ -110,31 +119,50 @@ function callBackUpdateBoardCell(data: {
     boardState.value[data.target.row][data.target.col] = data.value
 }
 function callBackCanNotMove(data: any) {
-    alert('cannot move')
+    alert('cannot move nah !\nwhy you can move this')
 }
 function callBackGetBoardGameData(data: any) {
+    // alert('get data')
+
     boardGameData.value = data as BoardGameData
     boardState.value = boardGameData.value?.board
+    if (!boardGameData.value.dataSymbol.some((e) => e.playerId === playerId)) {
+        yourPlayer.value = false
+    }
 }
 function callBackGameOver(data: any) {
-    if (data.isDraw) {
-        gameResultLabel.value = 'DRAW'
+    if (yourPlayer.value) {
+        if (data.isDraw) {
+            gameResultLabel.value = 'DRAW'
+        } else {
+            const winnerPlayer = data.playerId
+            const gameWinResult = winnerPlayer === playerId
+            gameResultLabel.value = gameWinResult ? 'You Win' : 'You Lose'
+        }
     } else {
-        const winnerPlayer = data.playerId
-        const gameWinResult = winnerPlayer === playerId
-        gameResultLabel.value = gameWinResult ? 'You Win' : 'You Lose'
+        if (data.isDraw) {
+            gameResultLabel.value = 'DRAW'
+        } else {
+            const winnerPlayer = data.playerId
+            const win = boardGameData.value?.dataSymbol.find(
+                (e) => e.playerId === winnerPlayer
+            )?.playerName
+            gameResultLabel.value = `${win} Win`
+        }
     }
     let countdown = 30
     const timer = setInterval(() => {
         timeOutLabel.value = `Leave room in ${countdown} s`
         countdown--
-        if (countdown < 0) {
+        if (countdown <= 0) {
+            router.push({ name: 'XoLobby' })
             clearTimeout(timer)
-            router.push({ name: 'GameLobby' })
         }
     }, 1000)
 }
 function callBackUpdateRoundPlayer(_playerId: string) {
+    // alert('round')
+
     const newData = JSON.parse(JSON.stringify(boardGameData.value))
     newData.roundPlayerId = _playerId
     newData.canMove = _playerId === playerId
@@ -172,12 +200,19 @@ function initial() {
                             .then((e) => {
                                 boardGameData.value = e.data as BoardGameData
                                 boardState.value = boardGameData.value?.board
+                                if (
+                                    !boardGameData.value.dataSymbol.some(
+                                        (e) => e.playerId === playerId
+                                    )
+                                ) {
+                                    yourPlayer.value = false
+                                }
                             })
                     }
                 }
             })
             .catch((e) => {
-                console.error(e)
+                router.push({ name: 'XoLobby' })
             })
     }
 }

@@ -23,6 +23,20 @@ export default (socket, store) => {
                 })
             }
         },
+        async checkToken() {
+            const { token } = req.body
+            jwt.verify(
+                token,
+                process.env.JWT_SECRET || 'test',
+                (err, decoded) => {
+                    if (err) {
+                        return responseData(res, 401, null)
+                    } else {
+                        return responseData(res, 200, decoded)
+                    }
+                }
+            )
+        },
         async registerUser(req, res) {
             try {
                 const { name, password, username } = await req.body

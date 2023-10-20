@@ -23,5 +23,5 @@ export interface BoardGameData {
 export interface SymbolData {
     playerId: string
     symbol: string
+    playerName: string
 }
-

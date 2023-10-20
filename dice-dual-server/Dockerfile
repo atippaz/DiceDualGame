@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-
-CMD ["node", "index.js"]
+# COPY nginx.conf /etc/nginx/conf.d/nginx.conf
+CMD ["npm", "start"]
 EXPOSE 9000
 EXPOSE 4500

@@ -41,7 +41,7 @@ const xoGameService = {
             board[0][0] === board[2][2]
         ) {
             boardData.gameOver = true
-            return this.returnWinState(true, boardboard[0][0])
+            return this.returnWinState(true, board[0][0])
         }
 
         if (
@@ -135,6 +135,13 @@ const xoGameService = {
         const boardId = xoGameState.findIndex((e) => e.roomId === roomId)
         if (boardId !== -1) {
             return xoGameState[boardId]
+        }
+        return null
+    },
+    assignDataToRoom(roomId, data) {
+        const boardId = xoGameState.findIndex((e) => e.roomId === roomId)
+        if (boardId !== -1) {
+            xoGameState[boardId] = data
         }
         return null
     },
