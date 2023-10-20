@@ -42,7 +42,9 @@ const api = async function (socket = null, store = null, mqqt) {
         } catch (er) {
             console.log(er)
         }
-        console.log('running in port http://localhost:' + port)
+        finally {
+            console.log('running in port http://localhost:' + port)
+        }
     })
 }
 export default api
