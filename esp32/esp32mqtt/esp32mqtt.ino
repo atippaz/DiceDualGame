@@ -2,8 +2,6 @@
 #include "PubSubClient.h"
 #include "LiquidCrystal_I2C.h"
 #include "ezButton.h"
-const int joystick_x_pin = A0; 
-const int joystick_y_pin = A3;
 // #define SW_PIN  G35
 #define LEFT_THRESHOLD  1000
 #define RIGHT_THRESHOLD 3000
@@ -21,10 +19,18 @@ int command = COMMAND_NO;
 float xValue = 0; // To store value of the X axis
 float yValue = 0; // To store value of the Y axis
 int bValue = 0; // To store value of the button
+int pinDown=A6;
+int pinUp=A7;
+int pinLeft=A4;
+int pinRight=A5;
+int p19=19;
+int p18=18;
+int p5=5;
+int p17=17;
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
-const char* ssid = "Zmksdks";
-const char* password = "113333555555";
+const char* ssid = "Maliwan";
+const char* password = "0874800155";
 const char* mqtt_server = "broker.hivemq.com";
 const int mqtt_port = 1883;
 const char* mqtt_user = "nasakun13201";
@@ -32,15 +38,16 @@ const char* mqtt_password = "pan28060";
 IPAddress staticIP(192, 168, 1, 100); // ตั้งค่าที่อยู่ IP ที่คุณต้องการ
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
-const int pin8 = 5;
-int LED3 = 18; // ขา D18
-int LED4 = 19; // ขา D18
-int LED5 = 17; // ขา D18
-
- 
+const int pin8 = 14; //5
+int LED5 = 25; // ขา D17
+int LED3 = 26; // ขา D18
+int LED4 = 27; // ขา D19
+int btnPin =23;
+bool isLeft,isRight,isUp,isDown = false;
 int WiFiStatus;
 WiFiClient espClient;
 PubSubClient client(espClient);
+bool isClick = false;
 
 String Get_WiFiStatus(int Status){
     switch(Status){
@@ -66,7 +73,14 @@ void setup(){
     pinMode(pin8, OUTPUT);  
     pinMode(LED3, OUTPUT);
     pinMode(LED4, OUTPUT);
-    Serial.begin(115200);
+    pinMode(p19, OUTPUT);
+    pinMode(p18, OUTPUT);
+    pinMode(p17, OUTPUT);
+    pinMode(p5, OUTPUT);
+    pinMode(btnPin, INPUT);
+
+    
+    Serial.begin(115200); 
     Serial.println("Connecting..");
     WiFi.begin(ssid, password);
     WiFiStatus = WiFi.status();
@@ -93,22 +107,108 @@ void setup(){
   }
   lcd.begin();
   lcd.backlight();
-  lcd.setCursor(0, 0); // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรตำแหน่งที่0 แถวที่ 1 เตรียมพิมพ์ข้อความ
+  lcd.setCursor(0, 0); // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรตำแหน่งที่0 แถวที่ 1 เตรียมพิมพ์ข้อความะะะะะะะะะะะะ
   lcd.print("Local ESP32 IP"); //พิมพ์ข้อความ "LCD1602 I2c Test"
   lcd.setCursor(2, 1); // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรกำแหน่งที3 แถวที่ 2 เตรียมพิมพ์ข้อความ
   lcd.print(WiFi.localIP()); //พิมพ์ข้อความ "myarduino.net"
-  // button.setDebounceTime(50);
 }
  
 void loop(){
-  // digitalWrite(LED3, HIGH); // สั่งให้ ขา D18 ปล่อยลอจิก 1 ไฟ LED ติด
-  // delay(100);
-  // digitalWrite(LED3, LOW);  // สั่งให้ ขา D18 ปล่อยลอจิก 0 ไฟ LED ดับ
-  // delay(100);
+  int valueLeft = analogRead(pinLeft);
+  int valueRight = analogRead(pinRight);
+  int valueUp = analogRead(pinUp);
+  int valueDown = analogRead(pinDown);
+
+  if(valueLeft > 4000){
+    isLeft = true;
+    isRight = !isLeft;
+    isUp = !isLeft;
+        Serial.print("left c");
+    isDown = !isLeft;
+      digitalWrite(p19, HIGH);
+      delay(1000);
+      digitalWrite(p19, LOW);
+       client.publish("move", "a");
+
+  }
+   else if(valueRight > 4000){
+    isRight = true;
+    isLeft = !isRight;
+    isUp = !isRight;
+    isDown = !isRight;
+        Serial.print("right c");
+
+         digitalWrite(p18, HIGH);
+      delay(1000);
+      digitalWrite(p18, LOW);
+       client.publish("move", "d");
+
+  }
+  else if(valueUp > 4000){
+    isUp = true;
+    isRight = !isUp;
+    isLeft = !isUp;
+        Serial.print("up c");
+    isDown = !isUp;
+        digitalWrite(p17, HIGH);
+      delay(1000);
+      digitalWrite(p17, LOW);
+       client.publish("move", "w");
+
+  }
+  else if(valueDown > 4000){
+    isDown = true;
+    isRight = !isDown;
+    isUp = !isDown;
+        Serial.print("down c");
+    isLeft = !isDown;
+        digitalWrite(p5, HIGH);
+      delay(1000);
+      digitalWrite(p5, LOW);
+       client.publish("move", "s");
+  }
+  int buttonState = digitalRead(btnPin);
+
+        Serial.print("y? ");
+         Serial.println( buttonState == HIGH);
+        Serial.print("y?? ");
+         Serial.println(buttonState == HIGH && !isClick);
+
+ 
+  if (buttonState == HIGH && !isClick) {
+        Serial.print("send : ");
+        isClick = true;
+        if(isDown){
+        Serial.print("down");
+        }
+        else if(isRight){
+        Serial.print("rigth");
+        }
+      else if(isUp){
+        Serial.print("up");
+      }
+      else if(isLeft){
+        Serial.print("left");
+      }
+      isDown = false;
+          isRight = false;
+          isUp = false;
+          isLeft = false;
+       client.publish("enter", "enter");
+
+      delay(2000);
+  } 
+  else if(buttonState == LOW && isClick){
+        isClick = false;
+        Serial.println("not click");
+  }
+  
   if (!client.connected()) {
     reconnect();
   }
   client.loop();
+
+
   // btnControll();
   // ส่งข้อความ "Hello, MQTT!" ไปยัง MQTT broker
   // client.publish("yourTopic", "Hello, MQTT!");
@@ -126,11 +226,6 @@ void callback(char* topic, byte* message, unsigned int length){
   Serial.println();
   Serial.println(messageTemp);
 
-
-  // Feel free to add more if statements to control more GPIOs with MQTT
-
-  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
-  // Changes the output state according to the message
   if (String(topic) == "esp32") {
     Serial.print("Changing output to ");
     if (messageTemp== "openLight") {
@@ -144,10 +239,6 @@ void callback(char* topic, byte* message, unsigned int length){
       delay(750);
       digitalWrite(LED3, LOW);  // สั่งให้ ขา D18 ปล่อยลอจิก 0 ไฟ LED ดับ
       digitalWrite(pin8, HIGH); 
-       
-       // สั่งให้ ขา D18 ปล่อยลอจิก 1 ไฟ LED ติด
-      
-      
   }
     else if(messageTemp == "closeLight"){
       digitalWrite(pin8, LOW);
@@ -159,7 +250,7 @@ void callback(char* topic, byte* message, unsigned int length){
       delay(750);
       digitalWrite(LED3, LOW); 
       digitalWrite(LED4, HIGH);
-       //พิมพ์ข้อความ "myarduino.net"
+     
     }
     else if(messageTemp == "error"){
       digitalWrite(LED3, HIGH);
@@ -170,56 +261,6 @@ void callback(char* topic, byte* message, unsigned int length){
     }
   }
   
-}
-void btnControll(){
-  int x_adc_val, y_adc_val; 
-  x_adc_val = analogRead(joystick_x_pin); 
-  y_adc_val = analogRead(joystick_y_pin);
-  xValue = ( ( x_adc_val * 3.3 ) / 4095 );  /*Convert digital value to voltage */
-  yValue = ( ( y_adc_val * 3.3 ) / 4095 );  /*Convert digital value to voltage */
-  Serial.print("xValue :");
-  Serial.println(xValue);
-  Serial.print("yValue :");
-  Serial.println(yValue);
-  // converts the analog value to commands
-  // reset commands
-  command = COMMAND_NO;
-
-  // check left/right commands
-  if (xValue < LEFT_THRESHOLD)
-    command = command | COMMAND_LEFT;
-  else if (xValue > RIGHT_THRESHOLD)
-    command = command | COMMAND_RIGHT;
-
-  // check up/down commands
-  else if (yValue < UP_THRESHOLD)
-    command = command | COMMAND_UP;
-  else if (yValue > DOWN_THRESHOLD)
-    command = command | COMMAND_DOWN;
-
-  // NOTE: AT A TIME, THERE MAY BE NO COMMAND, ONE COMMAND OR TWO COMMANDS
-
-  // print command to serial and process command
-  if (command & COMMAND_LEFT) {
-    Serial.println("COMMAND LEFT");
-    // TODO: add your task here
-  }
-
-  else if (command & COMMAND_RIGHT) {
-    Serial.println("COMMAND RIGHT");
-    // TODO: add your task here
-  }
-
-  else if (command & COMMAND_UP) {
-    Serial.println("COMMAND UP");
-    // TODO: add your task here
-  }
-
-  else if (command & COMMAND_DOWN) {
-    Serial.println("COMMAND DOWN");
-    // TODO: add your task here
-  }
-  delay(5000);
 }
 void reconnect() {
    while (!client.connected()) {

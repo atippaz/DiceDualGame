@@ -1,5 +1,5 @@
 import { createResponseObj } from '../../helpers/index.js'
-import { getUserOne } from '../../api/service/user.js'
+import { getUserOneWithOutPassword } from '../../api/service/user.js'
 const xoSocket = (store, socket, mqqt) => {
     return {
         startServer: () => {
@@ -8,6 +8,7 @@ const xoSocket = (store, socket, mqqt) => {
                     _socket.join(roomId)
                     console.log(`user : ${playerId} has join`)
                     _socket.userId = playerId
+                    store.services.socket.addSocketData(_socket.id, playerId)
                     socket
                         .to(roomId)
                         .except(_socket.id)
@@ -57,6 +58,7 @@ const xoSocket = (store, socket, mqqt) => {
                     _socket.leave(roomId)
                     console.log(`${_socket.userId} leave room`)
                     socket.to(_socket.id).emit('leaveRoom', null)
+
                 })
                 _socket.on('requestBoardGameData', async (roomId) => {
                     const { xoGame } = store.services
@@ -66,7 +68,7 @@ const xoSocket = (store, socket, mqqt) => {
                     if (boardData != null) {
                         const temp = JSON.parse(JSON.stringify(boardData))
                         await boardData.dataSymbol.forEach(async (e, i) => {
-                            temp.dataSymbol[i].playerName = await getUserOne({
+                            temp.dataSymbol[i].playerName = await getUserOneWithOutPassword({
                                 userId: e.playerId,
                             }).name
                         })
@@ -90,7 +92,7 @@ const xoSocket = (store, socket, mqqt) => {
                     boardData.canMove = boardData.roundPlayerId === playerId
                     const temp = JSON.parse(JSON.stringify(boardData))
                     await boardData.dataSymbol.forEach(async (e, i) => {
-                        temp.dataSymbol[i].playerName = await getUserOne({
+                        temp.dataSymbol[i].playerName = await getUserOneWithOutPassword({
                             userId: e.playerId,
                         }).name
                     })

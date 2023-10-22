@@ -3,6 +3,10 @@ const getUserAll = async () => {
     return await User.find().select('-password')
 }
 const getUserOne = async (param) => {
+    const user = await User.findOne(param).select('')
+    return user
+}
+const getUserOneWithOutPassword = async (param) => {
     const user = await User.findOne(param).select('-password')
     return user
 }
@@ -15,4 +19,4 @@ const createUser = async (data) => {
     }
 }
 
-export { getUserAll, getUserOne, createUser }
+export { getUserAll, getUserOne, createUser, getUserOneWithOutPassword }

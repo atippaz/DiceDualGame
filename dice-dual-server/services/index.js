@@ -1,5 +1,8 @@
 import { roomState, roomServices } from './room/room.js'
 import { xoGameState, xoGameService } from './xoGame/index.js'
+import { mqqtService, mqqtState } from './mqqt/index.js'
+import { socketService, socketState } from './socket/index.js'
+
 function cleanData() {
     roomServices.getRoomIsNotActive().forEach((e) => {
         roomServices.deleteRoom(e)
@@ -17,10 +20,14 @@ export default {
     state: {
         room: roomState,
         xoGame: xoGameState,
+        mqqt: mqqtState,
+        socket: socketState
     },
     services: {
         room: roomServices,
         xoGame: xoGameService,
+        mqqt: mqqtService,
+        socket: socketService
     },
     function: {
         cleanData,

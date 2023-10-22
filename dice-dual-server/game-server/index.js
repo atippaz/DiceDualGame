@@ -37,6 +37,7 @@ const initial = (store, mqqt) => {
                 initChatRoom = true
             }
         },
+        server: gameServer
     }
 }
 export default initial

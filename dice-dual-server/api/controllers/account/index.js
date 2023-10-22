@@ -3,12 +3,12 @@ import { responseData } from '../../../helpers/index.js'
 
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { createUser, getUserOne } from '../../service/user.js'
+import { createUser, getUserOne, getUserOneWithOutPassword } from '../../service/user.js'
 export default (socket, store) => {
     return {
         async getUserWithJwt(req, res) {
             try {
-                const user = await getUserOne({ _id: req.user.userId })
+                const user = await getUserOneWithOutPassword({ _id: req.user.userId })
                 res.json({
                     statusCode: 409,
                     data: {

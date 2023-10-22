@@ -10,7 +10,8 @@ export default (
     updateBoardCell: (data: any) => void,
     updateRoundPlayer: (data: string) => void,
     gameOver: (data: string) => void,
-    canNotMove: (data: string) => void
+    canNotMove: (data: string) => void,
+    handleKeyPress: (data: string) => void
 ) => {
     const context = getContext().inject(contextPluginSymbol)!
     let socket: Socket
@@ -71,6 +72,12 @@ export default (
                 })
                 socket.on('leaveRoom', (data) => {
                     resetSocket()
+                })
+                socket.on('controllerMove', (data) => {
+                    handleKeyPress(data)
+                })
+                socket.on('enterMove', (data) => {
+                    handleKeyPress('enter')
                 })
             }
         },

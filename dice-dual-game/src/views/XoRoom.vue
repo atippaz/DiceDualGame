@@ -1,23 +1,15 @@
 <template>
-    <div
-        v-if="detail"
-        class="w-100 h-100"
-        style="background-color: rgb(255, 234, 207)"
-    >
+    <div v-if="detail" class="w-100 h-100" style="background-color: rgb(255, 234, 207)">
         <div style="height: 10%">
             <div>Room Name:{{ dataDetail.roomName }}</div>
             {{ myData?.player }} VS {{ enemyData?.player }}
             <div>{{ dataDetail }}</div>
-            <v-btn
-                v-if="dataDetail.canStart && !hideStartGameBtn"
-                @click="startGame"
-                >startGame</v-btn
-            >
+            <v-btn v-if="dataDetail.canStart && !hideStartGameBtn" @click="startGame">startGame</v-btn>
             <div v-if="boardGameData != null && boardGameData && yourPlayer">
                 {{
                     boardGameData?.roundPlayerId === playerId
-                        ? 'Your Turn'
-                        : 'Enemy Turn'
+                    ? 'Your Turn'
+                    : 'Enemy Turn'
                 }}
 
                 your symbol is :
@@ -41,14 +33,9 @@
         <div style="height: 90%">
             <div class="w-100 h-100 d-flex justify-center align-center">
                 <div style="width: 400px; aspect-ratio: 1">
-                    <XoMainBoard
-                        :boardState="boardState"
-                        :canMove="
-                            boardGameData?.canMove &&
-                            boardGameData.roundPlayerId === playerId
-                        "
-                        @move="move"
-                    />
+                    <XoMainBoard :boardState="boardState" :canMove="boardGameData?.canMove &&
+                        boardGameData.roundPlayerId === playerId
+                        " @move="move" :isController="isController" :currentPosition="currentPosition" />
                 </div>
             </div>
         </div>
@@ -78,9 +65,12 @@ const socket = Socket(
     callBackUpdateBoardCell,
     callBackUpdateRoundPlayer,
     callBackGameOver,
-    callBackCanNotMove
+    callBackCanNotMove,
+    callbackControllGame
 )
 const yourPlayer = ref(true)
+const currentPosition = ref([1, 1])
+const isController = ref(false)
 const hideStartGameBtn = ref(false)
 const playerId = getContext().inject(contextPluginSymbol)!.userId.value
 const myData = computed(
@@ -102,9 +92,9 @@ const dataDetail = computed(() => {
     }
 })
 const detail = ref<RoomGameData>()
-;(async () => {
-    await initial()
-})()
+    ; (async () => {
+        await initial()
+    })()
 function callBackJoin(mes: string) {
     console.log(mes)
 }
@@ -168,8 +158,40 @@ function callBackUpdateRoundPlayer(_playerId: string) {
     newData.canMove = _playerId === playerId
     boardGameData.value = newData
 }
+function handleKeyPress(event: KeyboardEvent) {
+    if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === ' ') {
+        callbackControllGame(event.key)
+    }
+}
+function callbackControllGame(direction: string) {
+    if (direction === 'w' && (currentPosition.value[0] >= 1)) {
+        isController.value = true
+        currentPosition.value = [currentPosition.value[0] - 1, currentPosition.value[1]]
+    }
+    else if (direction === 's' && currentPosition.value[0] <= 1) {
+        isController.value = true
+        currentPosition.value = [currentPosition.value[0] + 1, currentPosition.value[1]]
+    }
+    else if (direction === 'd' && ((currentPosition.value[1] <= 1))) {
+        isController.value = true
+        currentPosition.value = [currentPosition.value[0], currentPosition.value[1] + 1]
+    }
+    else if (direction === 'a' && currentPosition.value[1] >= 1) {
+        isController.value = true
+        currentPosition.value = [currentPosition.value[0], currentPosition.value[1] - 1]
+    }
+    else if (direction === 'enter' || direction === ' ') {
+        if (boardGameData.value !== null && boardGameData.value!.canMove &&
+            boardGameData.value!.roundPlayerId === playerId) {
+
+            move({ col: currentPosition.value[1], row: currentPosition.value[0] })
+        }
+    }
+}
 function move(target: { row: string | number; col: string | number }) {
     socket.move(roomId.value as string, target)
+    currentPosition.value = [1, 1]
+    isController.value = false
 }
 function startGame() {
     if (roomId.value !== null && roomId.value !== '') {
@@ -216,7 +238,9 @@ function initial() {
             })
     }
 }
+document.addEventListener('keydown', handleKeyPress);
 onBeforeUnmount(() => {
     socket.leaveRoom(roomId.value as string)
+    document.removeEventListener('keydown', handleKeyPress);
 })
 </script>
