@@ -63,7 +63,7 @@ export default (socket, store) => {
                 jwt.sign(
                     payload,
                     process.env.JWT_SECRET || 'test',
-                    { expiresIn: '5s' },
+                    { expiresIn: '24hr' },
                     (err, token) => {
                         if (err) throw err
                         return responseData(res, 201, {
@@ -103,7 +103,7 @@ export default (socket, store) => {
                 jwt.sign(
                     payload,
                     process.env.JWT_SECRET || 'test',
-                    { expiresIn: '5s' },
+                    { expiresIn: '24hr' },
                     (err, token) => {
                         if (err) throw err
                         res.json({ statusCode: 200, data: { token } })
