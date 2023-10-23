@@ -3,6 +3,7 @@ const path = import.meta.env.VITE_API_PATH || ''
 import { getContext } from '@/context'
 import { contextPluginSymbol } from '@/plugins/context'
 
+
 const Api = () => {
     const context = getContext().inject(contextPluginSymbol)
     const token = context.token.value
@@ -15,8 +16,7 @@ const Api = () => {
             let queryString = ''
             if (path == null) return null
             return fetch(
-                `${path}/${controller}${
-                    param != null ? '/' + param : ''
+                `${path}/${controller}${param != null ? '/' + param : ''
                 }?${queryString}`,
                 {
                     headers: {
@@ -26,8 +26,22 @@ const Api = () => {
                     },
                 }
             )
-                .then((e) => e.json())
-                .catch((er) => console.log(er))
+                .then(async (response) => {
+                    const res: any = await response.json()
+
+                    if (res.status === 401) {
+                        throw new Error
+                    }
+                    else {
+                        return res
+                    }
+                })
+                .catch((er) => {
+                    console.log(er)
+                    getContext().router.push({ name: 'Login' })
+                    localStorage.removeItem('userToken')
+                    return
+                })
         },
         post(controller: string, payload: any) {
             return fetch(`${path}/${controller}`, {
@@ -40,10 +54,24 @@ const Api = () => {
 
                 //make sure to serialize your JSON body
                 body: JSON.stringify(payload),
-            }).then(
-                (response) => response.json()
-                //do something awesome that makes the world a better place
-            )
+            })
+                .then(async (response) => {
+                    const res: any = await response.json()
+                    // alert(res)
+
+                    if (res.status === 401) {
+                        throw new Error
+                    }
+                    else {
+                        return res
+                    }
+                })
+                .catch((er) => {
+                    console.log(er)
+                    getContext().router.push({ name: 'Login' })
+                    localStorage.removeItem('userToken')
+                    return
+                })
         },
     }
 }

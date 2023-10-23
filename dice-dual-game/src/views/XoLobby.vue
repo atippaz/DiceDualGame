@@ -4,12 +4,7 @@
         <v-row>
             <v-col>
                 <div>xo Room List</div>
-                <v-data-table
-                    :headers="headers"
-                    :items="xoRoomList"
-                    item-value="name"
-                    class="elevation-1"
-                >
+                <v-data-table :headers="headers" :items="xoRoomList" item-value="name" class="elevation-1">
                     <template v-slot:item.started="{ item }">
                         <div>
                             {{ item.started ? 'starting' : 'waiting' }}
@@ -17,48 +12,21 @@
                     </template>
                     <template v-slot:bottom> </template>
                     <template v-slot:item.actions="{ item }">
-                        <v-btn
-                            v-if="item.canJoin"
-                            @click="joinRoom(item.roomId)"
-                            >Join Room</v-btn
-                        >
-                        <v-btn
-                            v-if="item.canView"
-                            @click="viewRoom(item.roomId)"
-                            >View Room</v-btn
-                        >
-                        <v-btn
-                            v-if="item.canResume"
-                            @click="resume(item.roomId)"
-                            >resume
+                        <v-btn v-if="item.canJoin" @click="joinRoom(item.roomId)">Join Room</v-btn>
+                        <v-btn v-if="item.canView" @click="viewRoom(item.roomId)">View Room</v-btn>
+                        <v-btn v-if="item.canResume" @click="resume(item.roomId)">resume
                         </v-btn>
                     </template>
                 </v-data-table>
 
                 <div>current Room</div>
-                <v-data-table
-                    :headers="headers"
-                    :items="currentRoom"
-                    item-value="name"
-                    class="elevation-1"
-                >
+                <v-data-table :headers="headers" :items="currentRoom" item-value="name" class="elevation-1">
                     <template v-slot:bottom> </template>
 
                     <template v-slot:item.actions="{ item }">
-                        <v-btn
-                            v-if="item.canJoin"
-                            @click="joinRoom(item.roomId)"
-                            >Join Room</v-btn
-                        >
-                        <v-btn
-                            v-if="item.canView"
-                            @click="viewRoom(item.roomId)"
-                            >View Room</v-btn
-                        >
-                        <v-btn
-                            v-if="item.canResume"
-                            @click="resume(item.roomId)"
-                            >resume
+                        <v-btn v-if="item.canJoin" @click="joinRoom(item.roomId)">Join Room</v-btn>
+                        <v-btn v-if="item.canView" @click="viewRoom(item.roomId)">View Room</v-btn>
+                        <v-btn v-if="item.canResume" @click="resume(item.roomId)">resume
                         </v-btn>
                     </template>
                 </v-data-table>
@@ -114,7 +82,7 @@ const headers = ref([
 let timer: any = null
 function initDataRoom() {
     xoGameApi.getAll().then((res) => {
-        if (res.statusCode === 200) {
+        if (res && res.statusCode === 200) {
             const xoData = (res.data as []).map((e: any) => {
                 return {
                     roomName: e.roomName,
@@ -130,7 +98,7 @@ function initDataRoom() {
         }
     })
     xoGameApi.getCurrentRoom().then((res) => {
-        if (res.statusCode === 200) {
+        if (res && res.statusCode === 200) {
             const xoData = (res.data as []).map((e: any) => {
                 return {
                     roomName: e.roomName,

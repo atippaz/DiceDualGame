@@ -15,4 +15,9 @@ export function registerPlugins(app: App) {
     app.use(vuetify)
     app.use(context)
     app.use(router)
+    return {
+        router,
+        vuetify,
+        context
+    }
 }

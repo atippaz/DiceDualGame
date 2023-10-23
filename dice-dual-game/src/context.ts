@@ -7,6 +7,5 @@ export function getContext() {
 
 export function initializeContext(ctx: any) {
     if (context) throw new Error('Context can only be set once')
-
     context = ctx
 }
