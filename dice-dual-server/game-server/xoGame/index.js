@@ -15,6 +15,7 @@ const xoSocket = (store, socket, mqqt) => {
                         .emit('joinRoom', `สวัสดีทุกคน! ฉัน ${playerId}`)
                 })
                 _socket.on('disconnect', () => {
+                    store.services.socket.addSocketData(_socket.id, playerId)
                     console.log(`${_socket.userId} disconnected`)
                 })
                 _socket.on('requestGameData', (roomId) => {
@@ -57,8 +58,8 @@ const xoSocket = (store, socket, mqqt) => {
                 _socket.on('leaveRoom', (roomId) => {
                     _socket.leave(roomId)
                     console.log(`${_socket.userId} leave room`)
+                    store.services.socket.addSocketData(_socket.id, playerId)
                     socket.to(_socket.id).emit('leaveRoom', null)
-
                 })
                 _socket.on('requestBoardGameData', async (roomId) => {
                     const { xoGame } = store.services
