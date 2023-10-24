@@ -39,8 +39,13 @@
             {{ timeOutLabel }}
         </div>
         <div style="height: 90%">
+            <v-text-field
+                type="number"
+                v-model="boardsize"
+                label="boardsize"
+            ></v-text-field>
             <div class="w-100 h-100 d-flex justify-center align-center">
-                <div style="width: 500px; aspect-ratio: 1">
+                <div :style="`width: ${boardsize}px; aspect-ratio: 1`">
                     <XoMainBoard
                         :boardState="boardState"
                         :canMove="
@@ -64,9 +69,9 @@ import { useRouter, useRoute } from 'vue-router'
 import XoMainBoard from '@/components/xoGame/MainBoard.vue'
 import { RoomGameData, BoardGameData } from '@/interface/socket'
 import Socket from '@/api/socket/xoGame'
-
 import { getContext } from '@/context'
 import { contextPluginSymbol } from '@/plugins/context'
+const boardsize = ref(600)
 const router = useRouter()
 const rout = useRoute()
 const roomId = ref(rout.query.roomId)
