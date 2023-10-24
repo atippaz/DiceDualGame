@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 # COPY nginx.conf /etc/nginx/conf.d/nginx.conf
-CMD ["sh", "-c", "npm start && npm log"]
+CMD ["npm", "start"]
 EXPOSE 9000
 EXPOSE 4500
 
