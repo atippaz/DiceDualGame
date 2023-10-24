@@ -20,6 +20,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - /etc/letsencrypt/ssl:/cert
+      - ./index.html:/index.html
     networks:
       - servernetwork
 
