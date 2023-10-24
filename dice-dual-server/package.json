@@ -6,12 +6,13 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "nodemon index",
-        "start": "pm2 start index.js --name GameService && pm2 list",
+        "dev": "pm2 start ecosystem.config.cjs",
+        "start": "pm2 start ecosystem.config.cjs",
         "format": "npx prettier --write .",
         "stop": "pm2 stop all && pm2 list",
         "list": "pm2 list",
-        "dall": "pm2 delete all"
+        "dall": "pm2 delete all",
+        "log": "pm2 log serverapi"
     },
     "author": "",
     "license": "ISC",
