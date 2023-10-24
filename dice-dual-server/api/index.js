@@ -11,7 +11,7 @@ const api = async function (socket = null, store = null, mqqt) {
     server.use(cors())
 
     server.get('/', (req, res) => {
-        res.send({ data: 'hi', statusCode: 200 })
+        res.send({ data: 'hi V.1.5.6', statusCode: 200 })
     })
     server.get('/openLight', (req, res) => {
         mqqt.enemyTurn()
