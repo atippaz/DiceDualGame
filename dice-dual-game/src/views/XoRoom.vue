@@ -39,23 +39,33 @@
             {{ timeOutLabel }}
         </div>
         <div style="height: 90%">
-            <v-text-field
-                type="number"
-                v-model="boardsize"
-                label="boardsize"
-            ></v-text-field>
-            <div class="w-100 h-100 d-flex justify-center align-center">
-                <div :style="`width: ${boardsize}px; aspect-ratio: 1`">
-                    <XoMainBoard
-                        :boardState="boardState"
-                        :canMove="
-                            boardGameData?.canMove &&
-                            boardGameData.roundPlayerId === playerId
-                        "
-                        @move="move"
-                        :isController="isController"
-                        :currentPosition="currentPosition"
-                    />
+            <div class="w-100 h-100">
+                <div class="d-flex justify-end">
+                    <v-btn @click="showSlider = !showSlider"
+                        >close slider</v-btn
+                    >
+                </div>
+                <v-slider
+                    v-if="showSlider"
+                    v-model="boardsize"
+                    min="300"
+                    max="2000"
+                    label="boardsize"
+                    thumb-label
+                ></v-slider>
+                <div class="d-flex justify-center align-center">
+                    <div :style="`width: ${boardsize}px; aspect-ratio: 1`">
+                        <XoMainBoard
+                            :boardState="boardState"
+                            :canMove="
+                                boardGameData?.canMove &&
+                                boardGameData.roundPlayerId === playerId
+                            "
+                            @move="move"
+                            :isController="isController"
+                            :currentPosition="currentPosition"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -79,6 +89,7 @@ const boardGameData = ref<BoardGameData>()
 const boardState = ref()
 const timeOutLabel = ref('')
 const gameResultLabel = ref('')
+const showSlider = ref(true)
 const socket = Socket(
     callBackJoin,
     callBackRoomData,
