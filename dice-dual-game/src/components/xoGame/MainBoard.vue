@@ -30,7 +30,7 @@
                             >
                                 <p
                                     style="
-                                        font-size: 4em;
+                                        font-size: initial;
                                         color: white;
                                         text-align: center;
                                         font-weight: bold;
