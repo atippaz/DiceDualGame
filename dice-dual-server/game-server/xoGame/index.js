@@ -5,18 +5,28 @@ const xoSocket = (store, socket, mqqt) => {
         startServer: () => {
             socket.on('connection', (_socket) => {
                 _socket.on('joinRoom', ({ roomId, playerId }) => {
-                    _socket.join(roomId)
-                    console.log(`user : ${playerId} has join`)
-                    _socket.userId = playerId
-                    store.services.socket.addSocketData(_socket.id, playerId)
-                    socket
-                        .to(roomId)
-                        .except(_socket.id)
-                        .emit('joinRoom', `สวัสดีทุกคน! ฉัน ${playerId}`)
+                    if (playerId) {
+                        _socket.join(roomId)
+                        console.log(`user : ${playerId} has join`)
+                        _socket.userId = playerId
+                        store.services.socket.addSocketData(
+                            _socket.id,
+                            playerId
+                        )
+                        socket
+                            .to(roomId)
+                            .except(_socket.id)
+                            .emit('joinRoom', `สวัสดีทุกคน! ฉัน ${playerId}`)
+                    }
                 })
                 _socket.on('disconnect', () => {
-                    store.services.socket.addSocketData(_socket.id, playerId)
-                    console.log(`${_socket.userId} disconnected`)
+                    if (_socket.userId) {
+                        store.services.socket.addSocketData(
+                            _socket.id,
+                            _socket.userId
+                        )
+                        console.log(`${_socket.userId} disconnected`)
+                    }
                 })
                 _socket.on('requestGameData', (roomId) => {
                     const { room } = store.services
@@ -58,7 +68,11 @@ const xoSocket = (store, socket, mqqt) => {
                 _socket.on('leaveRoom', (roomId) => {
                     _socket.leave(roomId)
                     console.log(`${_socket.userId} leave room`)
-                    store.services.socket.addSocketData(_socket.id, playerId)
+                    // store.services.socket.addSocketData(
+                    //     _socket.id,
+                    //     _socket.userId
+                    // )
+                    //remove
                     socket.to(_socket.id).emit('leaveRoom', null)
                 })
                 _socket.on('requestBoardGameData', async (roomId) => {
@@ -69,9 +83,10 @@ const xoSocket = (store, socket, mqqt) => {
                     if (boardData != null) {
                         const temp = JSON.parse(JSON.stringify(boardData))
                         await boardData.dataSymbol.forEach(async (e, i) => {
-                            temp.dataSymbol[i].playerName = await getUserOneWithOutPassword({
-                                userId: e.playerId,
-                            }).name
+                            temp.dataSymbol[i].playerName =
+                                await getUserOneWithOutPassword({
+                                    userId: e.playerId,
+                                }).name
                         })
                         return socket
                             .to(_socket.id)
@@ -93,9 +108,10 @@ const xoSocket = (store, socket, mqqt) => {
                     boardData.canMove = boardData.roundPlayerId === playerId
                     const temp = JSON.parse(JSON.stringify(boardData))
                     await boardData.dataSymbol.forEach(async (e, i) => {
-                        temp.dataSymbol[i].playerName = await getUserOneWithOutPassword({
-                            userId: e.playerId,
-                        }).name
+                        temp.dataSymbol[i].playerName =
+                            await getUserOneWithOutPassword({
+                                userId: e.playerId,
+                            }).name
                     })
                     if (temp != null) {
                         return socket

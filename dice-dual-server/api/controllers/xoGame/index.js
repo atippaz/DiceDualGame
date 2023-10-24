@@ -36,8 +36,8 @@ export default (socket, store) => {
                         ) !== -1
                     const canJoin =
                         e.maxPlayer >
-                        e.players.filter((y) => y.playerId !== null)
-                            .length &&
+                            e.players.filter((y) => y.playerId !== null)
+                                .length &&
                         !e.started &&
                         !hasThisPlayerInGame
                     const canResume = hasThisPlayerInGame && e.started
@@ -83,8 +83,8 @@ export default (socket, store) => {
                         ) !== -1
                     const canJoin =
                         e.maxPlayer >
-                        e.players.filter((y) => y.playerId !== null)
-                            .length &&
+                            e.players.filter((y) => y.playerId !== null)
+                                .length &&
                         !e.started &&
                         !hasThisPlayerInGame
                     const canResume = hasThisPlayerInGame && e.started
@@ -125,7 +125,8 @@ export default (socket, store) => {
             ) {
                 const boardGameData = store.services.xoGame.createBoardGame(
                     roomId,
-                    roomData.players
+                    roomData.players,
+                    roomData.boardSize
                 )
                 if (boardGameData !== null) {
                     store.services.room.startRoom(roomId)
@@ -159,6 +160,8 @@ export default (socket, store) => {
         },
         createNewRoom: async (req, res) => {
             const { roomName } = req.body
+            const size = req.body.boardSize || 3
+
             const user = req.user
             const playerId = user.userId
             const playerName = user.name
@@ -168,7 +171,9 @@ export default (socket, store) => {
             const roomData = store.services.room.createNewRoom(
                 roomName,
                 GameType.XoGame,
-                playerId
+                playerId,
+                2,
+                size
             )
             if (roomData.status) {
                 if (
@@ -240,8 +245,8 @@ export default (socket, store) => {
                     ...roomData,
                     canStart:
                         roomData.maxPlayer >=
-                        roomData.players.filter((e) => e.playerId !== null)
-                            .length &&
+                            roomData.players.filter((e) => e.playerId !== null)
+                                .length &&
                         !roomData.started &&
                         roomData.owner === playerId,
                 }
@@ -257,13 +262,15 @@ export default (socket, store) => {
             boardGameData.canMove = boardGameData.roundPlayerId === userId
             const temp = JSON.parse(JSON.stringify(boardGameData))
             await boardGameData.dataSymbol.forEach(async (e, i) => {
-                temp.dataSymbol[i].playerName = await getUserOneWithOutPassword({
-                    userId: e.playerId,
-                }).name
+                temp.dataSymbol[i].playerName = await getUserOneWithOutPassword(
+                    {
+                        userId: e.playerId,
+                    }
+                ).name
             })
             return responseData(res, 200, temp)
         },
-        exitRoom(req, res) { },
-        deleteRoom(req, res) { },
+        exitRoom(req, res) {},
+        deleteRoom(req, res) {},
     }
 }

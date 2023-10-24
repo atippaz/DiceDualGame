@@ -16,7 +16,13 @@ function hasRoom(roomId) {
 const roomState = []
 const roomServices = {
     hasRoom,
-    createNewRoom: (roomName, gameType, playerId, maxPlayer = 2) => {
+    createNewRoom: (
+        roomName,
+        gameType,
+        playerId,
+        maxPlayer = 2,
+        boardSize = null
+    ) => {
         const roomId = uuidv4()
 
         if (hasRoom(roomId)) return false
@@ -37,6 +43,7 @@ const roomServices = {
             maxPlayer: maxPlayer,
             owner: playerId,
             isActive: true,
+            boardSize: boardSize,
         })
         return { roomId, gameType, status: true }
     },

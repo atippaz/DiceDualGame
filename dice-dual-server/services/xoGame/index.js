@@ -1,5 +1,3 @@
-let currentPlayer = 'X'
-let gameOver = false
 const xoGameService = {
     resetBoard(board) {
         for (let i = 0; i < 3; i++) {
@@ -13,44 +11,42 @@ const xoGameService = {
     },
     checkWin(boardData) {
         const { board } = boardData
-        for (let indexI = 0; indexI < board.length; indexI++) {
-            const boardCol = board[indexI]
-            for (let indexJ = 0; indexJ < boardCol.length; indexJ++) {
-                if (
-                    board[indexJ][0] !== null &&
-                    board[indexJ][0] === board[indexJ][1] &&
-                    board[indexJ][0] === board[indexJ][2]
-                ) {
-                    boardData.gameOver = true
-                    return this.returnWinState(true, board[indexJ][0])
-                }
-                if (
-                    board[0][indexJ] !== null &&
-                    board[0][indexJ] === board[1][indexJ] &&
-                    board[0][indexJ] === board[2][indexJ]
-                ) {
-                    boardData.gameOver = true
-                    return this.returnWinState(true, board[0][indexJ])
-                }
+        const size = boardData.boardSize
+        for (let indexI = 0; indexI < size; indexI++) {
+            const row = board[indexI][0]
+            const rowWin = board[indexI].every(
+                (cell, index) => row !== null && row === board[indexI][index]
+            )
+            const col = board[0][indexI]
+            const colWin = board.every(
+                (cell, index) => col !== null && col === board[index][indexI]
+            )
+
+            if (rowWin || colWin) {
+                boardData.gameOver = true
+                return this.returnWinState(true, board[indexI][0])
             }
         }
 
-        if (
-            board[0][0] !== null &&
-            board[0][0] === board[1][1] &&
-            board[0][0] === board[2][2]
-        ) {
-            boardData.gameOver = true
-            return this.returnWinState(true, board[0][0])
-        }
+        // Check for diagonal wins
+        const diagonal1 = board[0][0]
+        let outbound = 0
+        const diagonal1Win = board.every((cell, index) => {
+            outbound = index
+            return diagonal1 === board[index][index] && diagonal1 !== null
+        })
+        const diagonal2 = board[outbound][outbound]
+        const diagonal2Win = board.every((cell, index) => {
+            outbound -= 1
+            return (
+                diagonal1 === board[outbound + 1][outbound + 1] &&
+                diagonal2 !== null
+            )
+        })
 
-        if (
-            board[0][2] !== null &&
-            board[0][2] === board[1][1] &&
-            board[0][2] === board[2][0]
-        ) {
+        if (diagonal1Win || diagonal2Win) {
             boardData.gameOver = true
-            return this.returnWinState(true, board[0][2])
+            return this.returnWinState(true, board[0][board[0].length])
         }
 
         // Check for a draw
@@ -61,6 +57,7 @@ const xoGameService = {
 
         return this.returnWinState(true, null)
     },
+
     returnWinState(state, symbol) {
         return { moved: state, symbol: symbol }
     },
@@ -95,19 +92,20 @@ const xoGameService = {
 
         return canMove
     },
-    createBoardGame(roomId, player) {
+    createBoardGame(roomId, player, size = 3) {
         const symbol = player.map((e) => {
             return { playerId: e.playerId, symbol: '' }
         })
         const newBoard = {
-            board: Array(3)
+            board: Array(size)
                 .fill(null)
-                .map(() => Array(3).fill(null)),
+                .map(() => Array(size).fill(null)),
             roomId: roomId,
             roundPlayerId: null,
             gameOver: false,
             canMove: false,
             dataSymbol: symbol,
+            boardSize: size,
         }
         xoGameState.push(newBoard)
         return newBoard

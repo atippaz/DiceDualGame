@@ -12,9 +12,10 @@ const xoGameApi = () => {
         getOne: (roomId: string) => {
             return api.get(`${controller}/getRoomId`, roomId)!
         },
-        createRoom: (roomName: string) => {
+        createRoom: (roomName: string, boardSize = 3) => {
             return api.post(`${controller}/createRoom`, {
                 roomName,
+                boardSize: parseInt(boardSize.toString()),
             })!
         },
         hasRoom: (roomId: string) => {
