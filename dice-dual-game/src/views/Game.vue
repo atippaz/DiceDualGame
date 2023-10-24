@@ -41,7 +41,7 @@ import { roomApi } from '@/api/index'
 const route = useRoute()
 const router = useRouter()
 const roomId = route.query.roomId
-import Socket from '@/api/socket/index'
+import Socket from '@/api/socket/initial'
 import { onMounted } from 'vue'
 const socket = Socket().socket
 const data = ref('')
