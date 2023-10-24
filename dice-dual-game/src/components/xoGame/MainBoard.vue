@@ -15,7 +15,7 @@
                     >
                         <div class="ma-1 w-100">
                             <div
-                                class="rounded-xl h-100 d-flex align-center"
+                                class="rounded-xl h-100 d-flex align-center pa-6"
                                 style="background-color: rgb(0, 76, 255)"
                                 :class="{
                                     'current-select':
@@ -28,17 +28,10 @@
                                 }"
                                 @click="move(indexI, indexJ)"
                             >
-                                <p
-                                    style="
-                                        font-size: initial;
-                                        color: white;
-                                        text-align: center;
-                                        font-weight: bold;
-                                        width: 100%;
-                                    "
-                                >
-                                    {{ j }}
-                                </p>
+                                <v-img
+                                    v-if="image(j) !== null"
+                                    :src="image(j)!"
+                                ></v-img>
                             </div>
                         </div>
                     </div>
@@ -49,7 +42,11 @@
 </template>
 <script lang="ts" setup>
 import { defineProps, ref, computed } from 'vue'
-
+import x from '@/assets/icons/x.png'
+import o from '@/assets/icons/o.png'
+const image = (text: string | null) => {
+    return text === 'X' ? x : text === 'O' ? o : null
+}
 const props = defineProps({
     boardState: Array<Array<null | string>>,
     canMove: Boolean,
