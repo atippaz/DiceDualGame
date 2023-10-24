@@ -6,8 +6,8 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "pm2 start ecosystem.config.cjs",
-        "start": "pm2 start ecosystem.config.cjs",
+        "dev": "pm2 start  --no-daemon ecosystem.config.cjs",
+        "start": "pm2 start  --no-daemon ecosystem.config.cjs",
         "format": "npx prettier --write .",
         "stop": "pm2 stop all && pm2 list",
         "list": "pm2 list",
