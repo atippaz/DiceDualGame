@@ -1,5 +1,4 @@
 <template>
-    {{ boardState }}
     <div
         class="rounded-xl w-100 h-100 pa-4"
         style="background-color: rgb(255, 77, 0)"
@@ -66,11 +65,7 @@ const props = defineProps({
 const emits = defineEmits<{
     (e: 'move', target: { row: number | string; col: number | string }): void
 }>()
-const data = [
-    ['X', '', ''],
-    ['', 'X', ''],
-    ['', 'O', 'O'],
-]
+const data = [[null]]
 const boardState = computed(() => props.boardState || data)
 const canMove = computed(() => props.canMove)
 function move(indexI: string | number, indexJ: string | number) {

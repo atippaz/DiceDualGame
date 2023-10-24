@@ -14,11 +14,11 @@ const api = async function (socket = null, store = null, mqqt) {
         res.send({ data: 'hi', statusCode: 200 })
     })
     server.get('/openLight', (req, res) => {
-        mqqt.openLight()
+        mqqt.enemyTurn()
         res.send({ data: 'hi', statusCode: 200 })
     })
     server.get('/closeLight', (req, res) => {
-        mqqt.closeLight()
+        mqqt.yourTurn()
         res.send({ data: 'hi', statusCode: 200 })
     })
     server.get('/emergencyCleanData', (req, res) => {
@@ -41,8 +41,7 @@ const api = async function (socket = null, store = null, mqqt) {
                 })
         } catch (er) {
             console.log(er)
-        }
-        finally {
+        } finally {
             console.log('running in port http://localhost:' + port)
         }
     })

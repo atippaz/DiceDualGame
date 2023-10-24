@@ -1,4 +1,4 @@
-import SocketInstance from './index'
+import SocketInstance from './initial'
 import { contextPluginSymbol } from '@/plugins/context'
 import { getContext } from '@/context'
 import { type Socket } from 'socket.io-client'
@@ -15,6 +15,106 @@ export default (
 ) => {
     const context = getContext().inject(contextPluginSymbol)!
     let socket: Socket
+    let socketHasInit = false
+    let socketMapOnListeningEvent: Array<{ nameEvent: string; fn: Function }> =
+        []
+    const socketMapOnListeningEventInit = (
+        roomId: string,
+        isStart: boolean
+    ) => {
+        socketHasInit = true
+        socketMapOnListeningEvent = [
+            {
+                nameEvent: 'roomGameData',
+                fn: (data: any) => {
+                    roomGameData(data.data)
+                },
+            },
+            {
+                nameEvent: 'joinRoom',
+                fn: (data: any) => {
+                    joinRoom(data)
+                    if (!isStart) {
+                        //
+                        socket.emit('requestGameData', roomId)
+                    } else {
+                        //
+                        socket.emit('requestBoardGameData', roomId)
+                    }
+                },
+            },
+            {
+                nameEvent: 'getRequestRoom',
+                fn: (data: any) => {
+                    socket.emit('getRequestGameData', roomId)
+                },
+            },
+            {
+                nameEvent: 'getRequestGameData',
+                fn: (data: any) => {
+                    roomGameData(data.data)
+                },
+            },
+            {
+                nameEvent: 'boardGameData',
+                fn: (data: any) => {
+                    getBoardGameData(data.data)
+                },
+            },
+            {
+                nameEvent: 'updateBoardCell',
+                fn: (data: any) => {
+                    updateBoardCell(data.data)
+                },
+            },
+            {
+                nameEvent: 'getBoardGame',
+                fn: (data: any) => {
+                    socket.emit('getBoardGame', data.data)
+                },
+            },
+            {
+                nameEvent: 'gameOver',
+                fn: (data: any) => {
+                    if (data.statusCode === 200) {
+                        gameOver(data.data)
+                    }
+                },
+            },
+            {
+                nameEvent: 'updateRoundPlayer',
+                fn: (data: any) => {
+                    updateRoundPlayer(data.data)
+                },
+            },
+            {
+                nameEvent: 'canNotMove',
+                fn: (data: any) => {
+                    if (data.statusCode === 200) {
+                        canNotMove(data)
+                    }
+                },
+            },
+            {
+                nameEvent: 'leaveRoom',
+                fn: (data: any) => {
+                    resetSocket()
+                },
+            },
+            {
+                nameEvent: 'controllerMove',
+                fn: (data: any) => {
+                    handleKeyPress(data)
+                },
+            },
+            {
+                nameEvent: 'enterMove',
+                fn: (data: any) => {
+                    handleKeyPress('enter')
+                },
+            },
+        ]
+    }
     function resetSocket() {
         socket.disconnect()
     }
@@ -23,76 +123,42 @@ export default (
             resetSocket()
         },
         join: (roomId: string, isStart: boolean) => {
-            if (socket !== null) {
+            if (!socket) {
                 socket = SocketInstance().socket
                 socket.emit('joinRoom', {
                     roomId,
                     playerId: context.userId.value,
                 })
-                socket.on('joinRoom', (message) => {
-                    joinRoom(message)
-                    if (!isStart) {
-                        //
-                        socket.emit('requestGameData', roomId)
-                    } else {
-                        //
-                        socket.emit('requestBoardGameData', roomId)
-                    }
-                })
-                socket.on('roomGameData', (data) => {
-                    roomGameData(data.data)
-                })
-                socket.on('getRequestRoom', (mes) => {
-                    socket.emit('getRequestGameData', roomId)
-                })
-                socket.on('getRequestGameData', (data) => {
-                    roomGameData(data.data)
-                })
-                socket.on('boardGameData', (data) => {
-                    getBoardGameData(data.data)
-                })
-                socket.on('updateBoardCell', (data) => {
-                    updateBoardCell(data.data)
-                })
-                socket.on('getBoardGame', (data) => {
-                    socket.emit('getBoardGame', data.data)
-                })
-                socket.on('updateRoundPlayer', (data) => {
-                    updateRoundPlayer(data.data)
-                })
-                socket.on('gameOver', (data) => {
-                    if (data.statusCode === 200) {
-                        gameOver(data.data)
-                    }
-                })
-                socket.on('canNotMove', (data) => {
-                    if (data.statusCode === 200) {
-                        canNotMove(data)
-                    }
-                })
-                socket.on('leaveRoom', (data) => {
-                    resetSocket()
-                })
-                socket.on('controllerMove', (data) => {
-                    handleKeyPress(data)
-                })
-                socket.on('enterMove', (data) => {
-                    handleKeyPress('enter')
-                })
+                socketMapOnListeningEventInit(roomId, isStart)
+
+                socketMapOnListeningEvent.forEach((e) =>
+                    socket.on(e.nameEvent, (data) => e.fn(data))
+                )
             }
         },
         callAllUserGetBoardGameData(roomId: string) {
-            if (socket !== null) socket.emit('requestGetBoardGame', roomId)
+            if (socket !== null && socketHasInit)
+                socket.emit('requestGetBoardGame', roomId)
         },
 
         move(
             roomId: string,
             target: { row: number | string; col: number | string }
         ) {
-            if (socket !== null) socket.emit('move', { roomId, target })
+            if (socket !== null && socketHasInit)
+                socket.emit('move', { roomId, target })
         },
         leaveRoom(roomId: string) {
-            if (socket !== null) socket.emit('leaveRoom', roomId)
+            if (socket !== null && socketHasInit) {
+                socket.emit('leaveRoom', roomId)
+                console.log('removeing event listening')
+                socketHasInit = false
+                for (const event of socketMapOnListeningEvent) {
+                    socket.off(event.nameEvent, () => event.fn)
+                }
+            } else {
+                console.log('socket do not init')
+            }
         },
     }
 }

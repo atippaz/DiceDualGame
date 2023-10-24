@@ -6,10 +6,12 @@
     >
         <div style="height: 10%">
             <div>Room Name:{{ dataDetail.roomName }}</div>
-            {{ myData?.player }} VS {{ enemyData?.player }}
+            {{ myData?.player }} VS
+            {{ enemyData ? enemyData.player : 'waiting . . . ' }}
             <div>{{ dataDetail }}</div>
             <v-btn
-                v-if="dataDetail.canStart && !hideStartGameBtn"
+                v-if="!hideStartGameBtn"
+                :disabled="!dataDetail.canStart"
                 @click="startGame"
                 >startGame</v-btn
             >
@@ -26,8 +28,6 @@
                         (e) => e.playerId === playerId
                     )!.symbol
                 }}
-                {{ gameResultLabel }}
-                {{ timeOutLabel }}
             </div>
             <div v-else-if="boardGameData != null && boardGameData">
                 <span v-for="dataplayer in boardGameData.dataSymbol">
@@ -64,6 +64,7 @@ import { useRouter, useRoute } from 'vue-router'
 import XoMainBoard from '@/components/xoGame/MainBoard.vue'
 import { RoomGameData, BoardGameData } from '@/interface/socket'
 import Socket from '@/api/socket/xoGame'
+
 import { getContext } from '@/context'
 import { contextPluginSymbol } from '@/plugins/context'
 const router = useRouter()
@@ -128,7 +129,7 @@ function callBackCanNotMove(data: any) {
 }
 function callBackGetBoardGameData(data: any) {
     // alert('get data')
-
+    hideStartGameBtn.value = true
     boardGameData.value = data as BoardGameData
     boardState.value = boardGameData.value?.board
     if (!boardGameData.value.dataSymbol.some((e) => e.playerId === playerId)) {

@@ -5,21 +5,32 @@ const mqttSocket = (store, socket, mqtt) => {
     return {
         startServer: () => {
             socket.on('connection', (_socket) => {
-                console.log('connect to mqtt')
-                _socket.on(`${controller}/joinRoom`, ({ roomId, playerId }) => {
-                    _socket.join(roomId)
-                    console.log(`user : ${playerId} has join`)
-                    _socket.userId = playerId
-                    socket
-                        .to(roomId)
-                        .except(_socket.id)
-                        .emit('joinRoom', `สวัสดีทุกคน! ฉัน ${playerId}`)
+                _socket.on(`requestMqqtState`, () => {
+                    const data = store.services.mqqt.getInfo()
+                    socket.to(_socket.id).emit('mqqtStateInUse', {
+                        state: data.idController === null && data.isOnline,
+                        isOnline: data.isOnline,
+                        playerOwner: data.idController,
+                    })
                 })
-                _socket.on('mqttState', (data) => {
-                    socket.emit('mqttState', mqtt.getId() === null)
+                _socket.on('useMqqt', (playerId) => {
+                    store.services.mqqt.assignControllerId(playerId)
+                    const data = store.services.mqqt.getInfo()
+
+                    socket.emit('mqqtStateInUse', {
+                        state: data.idController === null && data.isOnline,
+                        isOnline: data.isOnline,
+                        playerOwner: data.idController,
+                    })
                 })
-                _socket.on(`${controller}/disconnect`, () => {
-                    console.log(`${_socket.userId} disconnected`)
+                _socket.on(`unUseMqqt`, (nu) => {
+                    store.services.mqqt.removeControllerId()
+                    const data = store.services.mqqt.getInfo()
+                    socket.emit('mqqtStateInUse', {
+                        state: data.idController === null && data.isOnline,
+                        isOnline: data.isOnline,
+                        playerOwner: data.idController,
+                    })
                 })
             })
         },

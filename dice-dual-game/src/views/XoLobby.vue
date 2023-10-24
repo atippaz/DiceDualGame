@@ -39,7 +39,7 @@
                     </v-data-table>
                 </v-col>
                 <v-col>
-                    <div>current Room</div>
+                    <div>Current Room</div>
                     <v-data-table
                         :headers="headers"
                         :items="currentRoom"
@@ -47,7 +47,11 @@
                         class="elevation-1"
                     >
                         <template v-slot:bottom> </template>
-
+                        <template v-slot:item.started="{ item }">
+                            <div>
+                                {{ item.started ? 'starting' : 'waiting' }}
+                            </div>
+                        </template>
                         <template v-slot:item.actions="{ item }">
                             <v-btn
                                 v-if="item.canJoin"
@@ -82,7 +86,15 @@
                         type="number"
                         label="board size game"
                     ></v-text-field>
+                    <div class="d-flex justify-end">
+                        <p class="text-mute">
+                            Esp32 State:{{
+                                mqqtIsOnline ? 'online' : 'offline'
+                            }}
+                        </p>
+                    </div>
                     <v-switch
+                        v-if="mqqtIsOnline"
                         label="Esp32 Setting"
                         v-model="useEsp32"
                         :disabled="!canUseEsp32"
@@ -91,9 +103,11 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn @click="closeDialogCreate"> close</v-btn>
+                    <v-btn @click="closeDialogCreate" color="error">
+                        close</v-btn
+                    >
 
-                    <v-btn @click="createRoom"> create</v-btn>
+                    <v-btn @click="createRoom" color="success"> create</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -106,22 +120,38 @@ import { getContext } from '@/context'
 import { contextPluginSymbol } from '@/plugins/context'
 
 const _context = getContext()
-const context = _context.inject(contextPluginSymbol)
-
+const context = _context.inject(contextPluginSymbol)!
+const playerId = context.userId.value
 const useEsp32 = ref(false)
 const canUseEsp32 = ref(true)
-import { xoGameApi, mqqtApi } from '@/api/index'
+import { xoGameApi } from '@/api/index'
 import { useRouter } from 'vue-router'
-import Socket from '@/api/socket/index'
+import MqqtSocket from '@/api/socket/mqqt'
+import { watch } from 'vue'
+watch(
+    () => useEsp32.value,
+    (newValue) => {
+        console.log(newValue)
+        if (newValue) {
+            console.log('ใช้')
+            mqqt.useMqqt(playerId)
+        } else {
+            console.log('ไม่ใช้')
+            mqqt.unUseMqqt()
+        }
+    }
+)
 const router = useRouter()
 const dialogCreate = ref(false)
 const boardSize = ref(3)
 // const socket = Socket().socket
+const mqqt = MqqtSocket(handleMqqtState)
 const data = ref('')
 const roomName = ref('')
 const roomid = ref('')
 const xoRoomList = ref([])
 const currentRoom = ref([])
+const mqqtIsOnline = ref(false)
 const headers = ref([
     {
         title: 'RoomName',
@@ -140,6 +170,17 @@ const headers = ref([
     { title: '', key: 'actions', sortable: false },
 ])
 let timer: any = null
+function handleMqqtState(
+    state: boolean,
+    playerOwner: string | null,
+    isOnline: boolean
+) {
+    canUseEsp32.value = !(
+        (state && playerOwner === playerId) ||
+        playerOwner === null
+    )
+    mqqtIsOnline.value = isOnline
+}
 function initDataRoom() {
     xoGameApi.getAll().then((res) => {
         if (res && res.statusCode === 200) {

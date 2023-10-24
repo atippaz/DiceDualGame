@@ -174,8 +174,8 @@ const xoSocket = (store, socket) => {
                                     )
                                     if (mqqt.getId() != null) {
                                         mqqt.getId() === boardData.roundPlayerId
-                                            ? mqqt.closeLight()
-                                            : mqqt.openLight()
+                                            ? mqqt.yourTurn()
+                                            : mqqt.enemyTurn()
                                     }
 
                                     socket

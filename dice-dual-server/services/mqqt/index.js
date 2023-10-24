@@ -15,12 +15,15 @@ const mqqtService = {
     getCurrentId: () => {
         return mqqtState.idController
     },
+    getInfo: () => {
+        return mqqtState
+    },
     setState: (state) => {
-        return mqqtState.isOnline = state
-    }
+        return (mqqtState.isOnline = state)
+    },
 }
 const mqqtState = {
     idController: null,
-    isOnline: false
+    isOnline: false,
 }
 export { mqqtService, mqqtState }

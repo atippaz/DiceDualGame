@@ -151,7 +151,7 @@ export default (socket, store) => {
                     })
                     boardGameData.roundPlayerId = turnPlayerId
                     boardGameData.canMove = turnPlayerId === playerId
-                    store.services.mqqt.assignControllerId(playerId)
+                    // store.services.mqqt.assignControllerId(playerId)
                     return responseData(res, 200, boardGameData)
                 }
                 return responseData(res, 404, null)

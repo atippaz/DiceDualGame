@@ -101,7 +101,7 @@ void setup(){
     Serial.println("Connected to MQTT broker");
     // Subscribe to the MQTT topic
       client.subscribe("esp32");
-       client.publish("yourTopic", "Hello, MQTT!");
+       client.publish("sayhi", "Hello, MQTT!");
   } else {
     Serial.println("Failed to connect to MQTT broker");
   }
@@ -228,7 +228,7 @@ void callback(char* topic, byte* message, unsigned int length){
 
   if (String(topic) == "esp32") {
     Serial.print("Changing output to ");
-    if (messageTemp== "openLight") {
+    if (messageTemp== "enemy turn") {
       digitalWrite(LED4, LOW);
       lcd.clear();
       digitalWrite(LED3, HIGH);
@@ -240,7 +240,7 @@ void callback(char* topic, byte* message, unsigned int length){
       digitalWrite(LED3, LOW);  // สั่งให้ ขา D18 ปล่อยลอจิก 0 ไฟ LED ดับ
       digitalWrite(pin8, HIGH); 
   }
-    else if(messageTemp == "closeLight"){
+    else if(messageTemp == "your turn"){
       digitalWrite(pin8, LOW);
       digitalWrite(LED3, HIGH);
       lcd.clear();

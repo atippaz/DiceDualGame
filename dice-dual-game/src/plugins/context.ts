@@ -26,14 +26,19 @@ function $context() {
         _userId.value = userId
     }
     function syncToken() {
-        _token.value = localStorage.getItem('userToken') || ''
-        _userId.value =
-            _token.value === '' ||
-            _token.value === undefined ||
-            _token.value === null
-                ? ''
-                : (jwt_decode(_token.value) as any).userId
-        console.log(_userId.value)
+        try {
+            _token.value = localStorage.getItem('userToken') || ''
+            _userId.value =
+                _token.value === '' ||
+                _token.value === undefined ||
+                _token.value === null
+                    ? ''
+                    : (jwt_decode(_token.value) as any).userId
+            console.log(_userId.value)
+        } catch (er) {
+            console.log(er)
+            localStorage.removeItem('userToken')
+        }
     }
     syncToken()
     return {
