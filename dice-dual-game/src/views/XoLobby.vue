@@ -126,14 +126,16 @@ const headers = ref([
     { title: '', key: 'actions', sortable: false },
 ])
 let timer: any = null
-const statemqqt: any = ref(null)
+const statemqqt: any = ref(5555)
 function handleMqqtState(
     state: boolean,
     playerOwner: string | null,
     isOnline: boolean
 ) {
     statemqqt.value = {
-        state, playerOwner, isOnline
+        state:state, 
+playerOwner:playerOwner, 
+isOnline:isOnline
     }
     canUseEsp32.value = !(
         (state && playerOwner === playerId) ||
