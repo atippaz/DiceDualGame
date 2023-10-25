@@ -68,10 +68,7 @@ const xoSocket = (store, socket, mqqt) => {
                 _socket.on('leaveRoom', (roomId) => {
                     _socket.leave(roomId)
                     console.log(`${_socket.userId} leave room`)
-                    // store.services.socket.addSocketData(
-                    //     _socket.id,
-                    //     _socket.userId
-                    // )
+                    store.services.socket.removeSocketId(_socket.id)
                     //remove
                     socket.to(_socket.id).emit('leaveRoom', null)
                 })
@@ -161,6 +158,21 @@ const xoSocket = (store, socket, mqqt) => {
                                             'updateRoundPlayer',
                                             createResponseObj(200, null)
                                         )
+
+                                    if (store.services.mqqt.getCurrentId() !== null) {
+                                        if (moveState.symbol === 'draw') {
+                                            mqqt.draw()
+                                        }
+                                        else {
+                                            if (playerId === store.services.mqqt.getCurrentId()) {
+                                                mqqt.yourWin()
+                                            }
+                                            else {
+                                                mqqt.yourLose()
+                                            }
+                                        }
+                                    }
+
                                     socket.to(roomId).emit(
                                         'gameOver',
                                         createResponseObj(200, {
@@ -205,8 +217,8 @@ const xoSocket = (store, socket, mqqt) => {
                                             ).symbol,
                                         })
                                     )
-                                    if (mqqt.getId() != null) {
-                                        mqqt.getId() === boardData.roundPlayerId
+                                    if (store.services.mqqt.getCurrentId() != null) {
+                                        store.services.mqqt.getCurrentId() === boardData.roundPlayerId
                                             ? mqqt.yourTurn()
                                             : mqqt.enemyTurn()
                                     }

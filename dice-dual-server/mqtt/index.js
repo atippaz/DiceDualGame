@@ -1,9 +1,10 @@
 import mqtt from 'mqtt'
 const mqttServer = () => {
-    const idPlayerUserEsp = null
     const client = mqtt.connect('mqtt://broker.hivemq.com:1883')
     let conMove = true
     let isOnline = true
+    let looking
+    let cooldown = false
     const initServiceMqqt = (socket, store) => {
         if (client) {
             client.on('connect', () => {
@@ -16,10 +17,13 @@ const mqttServer = () => {
             client.on('message', (topic, message) => {
                 isOnline = true
                 store.services.mqqt.setState(true)
+                lookUpOnline()
 
-                console.log(
-                    `Received message on topic ${topic}: ${message.toString()}`
-                )
+                if (!cooldown) {
+                    console.log(
+                        `Received message on topic ${topic}: ${message.toString()}`
+                    )
+                }
                 if (topic === 'move') {
                     const id = store.services.socket.getSocketId(
                         store.services.mqqt.getCurrentId()
@@ -29,6 +33,7 @@ const mqttServer = () => {
                             .to(id)
                             .emit('controllerMove', message.toString())
                         conMove = false
+                        console.log('move ' + message.toString());
                         setTimeout(() => {
                             conMove = true
                         }, 1000)
@@ -41,10 +46,12 @@ const mqttServer = () => {
                     )
                     if (id) {
                         socket.server.to(id).emit('enterMove', 'enter')
+                        console.log('send enter');
                     } else {
                         console.log('not found')
                     }
-                } else if (topic === 'sayhi') {
+                } else if (topic === 'sayhi' && !cooldown) {
+                    cooldown = true
                     store.services.mqqt.setState(true)
                     const data = store.services.mqqt.getInfo()
                     socket.server.emit('mqqtStateInUse', {
@@ -52,32 +59,43 @@ const mqttServer = () => {
                         isOnline: data.isOnline,
                         playerOwner: data.idController,
                     })
+                    setTimeout(() => {
+                        cooldown = false
+                    }, 10000);
                 }
             })
             lookUpOnline()
             function lookUpOnline() {
-                setInterval(() => {
-                    isOnline = false
-                    setTimeout(() => {
-                        if (!isOnline) {
-                            store.services.mqqt.setState(false)
-                            const data = store.services.mqqt.getInfo()
-                            socket.server.emit('mqqtStateInUse', {
-                                state: data.idController === null && data.isOnline,
-                                isOnline: data.isOnline,
-                                playerOwner: data.idController,
-                            })
-                        }
-                        else {
-                            const data = store.services.mqqt.getInfo()
-                            socket.server.emit('mqqtStateInUse', {
-                                state: data.idController === null && data.isOnline,
-                                isOnline: data.isOnline,
-                                playerOwner: data.idController,
-                            })
-                        }
+                // console.log('check esp32 is online ?');
+                if (!looking) {
+                    console.log('checking esp32 . . .');
+                    looking = setInterval(() => {
+                        isOnline = false
+                        setTimeout(() => {
+                            if (!isOnline) {
+                                console.log('esp32 offine');
+                                store.services.mqqt.setState(false)
+                                const data = store.services.mqqt.getInfo()
+                                socket.server.emit('mqqtStateInUse', {
+                                    state: data.idController === null && data.isOnline,
+                                    isOnline: data.isOnline,
+                                    playerOwner: data.idController,
+                                })
+                                clearInterval(looking)
+                                looking = null
+                            }
+                            else {
+                                console.log('esp32 is online');
+                                const data = store.services.mqqt.getInfo()
+                                socket.server.emit('mqqtStateInUse', {
+                                    state: data.idController === null && data.isOnline,
+                                    isOnline: data.isOnline,
+                                    playerOwner: data.idController,
+                                })
+                            }
+                        }, 5000);
                     }, 5000);
-                }, 5000);
+                }
             }
 
             client.on('offline', () => {
@@ -87,22 +105,25 @@ const mqttServer = () => {
         }
     }
     return {
-        updateId: (playerId) => {
-            idPlayerUserEsp = playerId
-        },
-        getId: () => {
-            return idPlayerUserEsp
-        },
-        deleteId: () => {
-            idPlayerUserEsp = null
-        },
         enemyTurn: () => {
             console.log('esp32 enemy turn')
-            client.publish('esp32', 'enemy turn')
+            client.publish('esp32', 'enemyturn')
         },
         yourTurn: () => {
             console.log('esp32 your turn')
-            client.publish('esp32', 'your turn')
+            client.publish('esp32', 'yourturn')
+        },
+        yourWin: () => {
+            console.log('esp32 your win')
+            client.publish('esp32', 'yourwin')
+        },
+        yourLose: () => {
+            console.log('esp32 your lose')
+            client.publish('esp32', 'yourlose')
+        },
+        draw: () => {
+            console.log('esp32 draw')
+            client.publish('esp32', 'draw')
         },
         initServiceMqqt: initServiceMqqt,
     }

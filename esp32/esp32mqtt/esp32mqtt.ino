@@ -32,7 +32,7 @@ int WiFiStatus;
 WiFiClient espClient;
 PubSubClient client(espClient);
 bool isClick = false;
-
+bool handshake = false;
 String Get_WiFiStatus(int Status) {
   switch (Status) {
     case WL_IDLE_STATUS:
@@ -98,6 +98,7 @@ void setup() {
 }
 
 void loop() {
+  handshake = false;
   int valueLeft = analogRead(pinLeft);
   int valueRight = analogRead(pinRight);
   int valueUp = analogRead(pinUp);
@@ -112,6 +113,7 @@ void loop() {
     client.publish("move", "a");
     digitalWrite(leftPin, HIGH);
     delay(1800);
+    handshake = true;
     digitalWrite(leftPin, LOW);
 
   } else if (valueRight > 4000) {
@@ -124,6 +126,7 @@ void loop() {
     Serial.print("right c");
     digitalWrite(p18, HIGH);
     delay(1800);
+    handshake = true;
     digitalWrite(p18, LOW);
 
   } else if (valueUp > 4000) {
@@ -135,6 +138,7 @@ void loop() {
     client.publish("move", "w");
     digitalWrite(p17, HIGH);
     delay(1800);
+    handshake = true;
     digitalWrite(p17, LOW);
 
   } else if (valueDown > 4000) {
@@ -146,16 +150,10 @@ void loop() {
     client.publish("move", "s");
     digitalWrite(p5, HIGH);
     delay(1800);
+    handshake = true;
     digitalWrite(p5, LOW);
   }
   int buttonState = digitalRead(btnPin);
-
-  Serial.print("y? ");
-  Serial.println(buttonState == HIGH);
-  Serial.print("y?? ");
-  Serial.println(buttonState == HIGH && !isClick);
-
-
   if (buttonState == HIGH && !isClick) {
     Serial.print("send : ");
     isClick = true;
@@ -173,7 +171,7 @@ void loop() {
     isUp = false;
     isLeft = false;
     client.publish("enter", "enter");
-
+    handshake = true;
     delay(2000);
   } else if (buttonState == LOW && isClick) {
     isClick = false;
@@ -184,12 +182,12 @@ void loop() {
     reconnect();
   }
   client.loop();
-
-
-  // btnControll();
-  // ส่งข้อความ "Hello, MQTT!" ไปยัง MQTT broker
-  // client.publish("yourTopic", "Hello, MQTT!");
+  if (!handshake) {
+    client.publish("sayhi", "Hello, MQTT!");
+    delay(800);
+  }
 }
+
 void callback(char* topic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.print(topic);
@@ -205,7 +203,7 @@ void callback(char* topic, byte* message, unsigned int length) {
 
   if (String(topic) == "esp32") {
     Serial.print("Changing output to ");
-    if (messageTemp == "enemy turn") {
+    if (messageTemp == "enemyturn") {
       digitalWrite(LED4, LOW);
       lcd.clear();
       digitalWrite(LED3, HIGH);
@@ -216,7 +214,7 @@ void callback(char* topic, byte* message, unsigned int length) {
       delay(750);
       digitalWrite(LED3, LOW);  // สั่งให้ ขา D18 ปล่อยลอจิก 0 ไฟ LED ดับ
       digitalWrite(pin8, HIGH);
-    } else if (messageTemp == "your turn") {
+    } else if (messageTemp == "yourturn") {
       digitalWrite(pin8, LOW);
       digitalWrite(LED3, HIGH);
       lcd.clear();
@@ -233,6 +231,39 @@ void callback(char* topic, byte* message, unsigned int length) {
       delay(750);
       digitalWrite(LED5, LOW);
       digitalWrite(LED3, LOW);
+    } else if (messageTemp == "yourlose" || messageTemp == "yourwin" || messageTemp == "draw") {
+      digitalWrite(pin8, LOW);
+      digitalWrite(LED3, LOW);
+      lcd.clear();
+      lcd.setCursor(0, 0);  // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรตำแหน่งที่0 แถวที่ 1 เตรียมพิมพ์ข้อความ
+      lcd.setCursor(2, 1);  // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรกำแหน่งที3 แถวที่ 2 เตรียมพิมพ์ข้อความ
+      lcd.print("game result");
+      delay(750);
+      digitalWrite(LED3, LOW);
+      digitalWrite(LED4, LOW);
+      if (messageTemp == "yourlose") {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.setCursor(2, 1);
+        lcd.print("your lose");
+      } else if(messageTemp == "yourwin") {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.setCursor(2, 1);
+        lcd.print("your win");
+      }
+      else{
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.setCursor(2, 1);
+        lcd.print("Draw");
+      }
+      delay(10000);
+      lcd.clear();
+      lcd.setCursor(0, 0);          // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรตำแหน่งที่0 แถวที่ 1 เตรียมพิมพ์ข้อความะะะะะะะะะะะะ
+      lcd.print("Local ESP32 IP");  //พิมพ์ข้อความ "LCD1602 I2c Test"
+      lcd.setCursor(2, 1);          // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรกำแหน่งที3 แถวที่ 2 เตรียมพิมพ์ข้อความ
+      lcd.print(WiFi.localIP());    //
     }
   }
 }

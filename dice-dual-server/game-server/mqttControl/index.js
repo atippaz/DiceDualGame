@@ -4,8 +4,6 @@ const mqttSocket = (store, socket, mqtt) => {
     return {
         startServer: () => {
             socket.on('connection', (_socket) => {
-                console.log('mqtt socket Start')
-
                 _socket.on(`requestMqqtState`, () => {
                     const data = store.services.mqqt.getInfo()
                     socket.to(_socket.id).emit('mqqtStateInUse', {

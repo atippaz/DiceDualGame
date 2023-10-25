@@ -11,9 +11,14 @@ const initial = (store, mqqt) => {
     const port = process.env.PORT_GAME_SERVER || 888
     server.use(cors())
     server.use(middleWare)
+    let initMqqt = false
+
     const app = server.listen(port, function (err, result) {
         console.log('running in socket port http://localhost:' + port)
-        Mqtt(store, gameServer, mqqt).startServer()
+        if (!initMqqt) {
+            initMqqt = true
+            Mqtt(store, gameServer, mqqt).startServer()
+        }
     })
     const gameServer = new SocketIOServer(app, {
         cors: {
@@ -22,6 +27,7 @@ const initial = (store, mqqt) => {
         transports: ['polling', 'websocket'],
     })
     let initSocket = false
+
     let initChatRoom = false
     return {
         createRoom: () => {

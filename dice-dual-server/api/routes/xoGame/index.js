@@ -3,7 +3,7 @@ import { xoGameController } from '../../controllers/index.js'
 import { checkToken } from '../../middleware/index.js'
 const route = express.Router()
 const controllerName = '/xoGame'
-const service = (_socket, store) => {
+const service = (_socket, store, mqqt) => {
     const {
         onGetAll,
         onGetCurrentRoom,
@@ -17,7 +17,7 @@ const service = (_socket, store) => {
         getBoardGameById,
         exitRoom,
         deleteRoom,
-    } = xoGameController(_socket, store)
+    } = xoGameController(_socket, store, mqqt)
 
     route.get(`${controllerName}/getAll`, checkToken, onGetAll)
     route.get(
