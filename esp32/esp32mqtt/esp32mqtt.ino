@@ -1,29 +1,13 @@
 #include <WiFi.h>
 #include "PubSubClient.h"
 #include "LiquidCrystal_I2C.h"
-#include "ezButton.h"
-// #define SW_PIN  G35
-#define LEFT_THRESHOLD 1000
-#define RIGHT_THRESHOLD 3000
-#define UP_THRESHOLD 1000
-#define DOWN_THRESHOLD 3000
 
-#define COMMAND_NO 0x00
-#define COMMAND_LEFT 0x01
-#define COMMAND_RIGHT 0x02
-#define COMMAND_UP 0x04
-#define COMMAND_DOWN 0x08
 
-// ezButton button(SW_PIN);
-int command = COMMAND_NO;
-float xValue = 0;  // To store value of the X axis
-float yValue = 0;  // To store value of the Y axis
-int bValue = 0;    // To store value of the button
 int pinDown = A6;
 int pinUp = A7;
 int pinLeft = A4;
 int pinRight = A5;
-int p19 = 19;
+int leftPin = 19;
 int p18 = 18;
 int p5 = 5;
 int p17 = 17;
@@ -73,7 +57,7 @@ void setup() {
   pinMode(pin8, OUTPUT);
   pinMode(LED3, OUTPUT);
   pinMode(LED4, OUTPUT);
-  pinMode(p19, OUTPUT);
+  pinMode(leftPin, OUTPUT);
   pinMode(p18, OUTPUT);
   pinMode(p17, OUTPUT);
   pinMode(p5, OUTPUT);
@@ -125,22 +109,22 @@ void loop() {
     isUp = !isLeft;
     Serial.print("left c");
     isDown = !isLeft;
-    digitalWrite(p19, HIGH);
-    delay(1000);
-    digitalWrite(p19, LOW);
     client.publish("move", "a");
+    digitalWrite(leftPin, HIGH);
+    delay(1800);
+    digitalWrite(leftPin, LOW);
 
   } else if (valueRight > 4000) {
     isRight = true;
     isLeft = !isRight;
     isUp = !isRight;
     isDown = !isRight;
-    Serial.print("right c");
 
-    digitalWrite(p18, HIGH);
-    delay(1000);
-    digitalWrite(p18, LOW);
     client.publish("move", "d");
+    Serial.print("right c");
+    digitalWrite(p18, HIGH);
+    delay(1800);
+    digitalWrite(p18, LOW);
 
   } else if (valueUp > 4000) {
     isUp = true;
@@ -148,10 +132,10 @@ void loop() {
     isLeft = !isUp;
     Serial.print("up c");
     isDown = !isUp;
-    digitalWrite(p17, HIGH);
-    delay(1000);
-    digitalWrite(p17, LOW);
     client.publish("move", "w");
+    digitalWrite(p17, HIGH);
+    delay(1800);
+    digitalWrite(p17, LOW);
 
   } else if (valueDown > 4000) {
     isDown = true;
@@ -159,10 +143,10 @@ void loop() {
     isUp = !isDown;
     Serial.print("down c");
     isLeft = !isDown;
-    digitalWrite(p5, HIGH);
-    delay(1000);
-    digitalWrite(p5, LOW);
     client.publish("move", "s");
+    digitalWrite(p5, HIGH);
+    delay(1800);
+    digitalWrite(p5, LOW);
   }
   int buttonState = digitalRead(btnPin);
 

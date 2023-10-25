@@ -102,6 +102,7 @@ const dialogCreate = ref(false)
 const boardSize = ref(3)
 // const socket = Socket().socket
 const mqqt = MqqtSocket(handleMqqtState)
+mqqt.connect()
 const data = ref('')
 const roomName = ref('')
 const roomid = ref('')
@@ -128,19 +129,18 @@ const headers = ref([
 let timer: any = null
 const statemqqt: any = ref(5555)
 function handleMqqtState(
-    state: boolean,
+
     playerOwner: string | null,
     isOnline: boolean
 ) {
     statemqqt.value = {
-        state:state, 
-playerOwner:playerOwner, 
-isOnline:isOnline
+
+        playerOwner: playerOwner,
+        isOnline: isOnline
     }
-    canUseEsp32.value = !(
-        (state && playerOwner === playerId) ||
-        playerOwner === null
-    )
+    canUseEsp32.value =
+        playerOwner === null ? isOnline : playerOwner === playerId && isOnline
+
     mqqtIsOnline.value = isOnline
 }
 function initDataRoom() {

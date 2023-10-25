@@ -169,6 +169,13 @@ const xoSocket = (store, socket, mqqt) => {
                                         })
                                     )
                                     room.removeOwner(roomId)
+                                    store.services.mqqt.removeControllerId()
+                                    const data = store.services.mqqt.getInfo()
+                                    socket.emit('mqqtStateInUse', {
+                                        state: data.idController === null && data.isOnline,
+                                        isOnline: data.isOnline,
+                                        playerOwner: data.idController,
+                                    })
                                     return
                                 } else {
                                     const playerindex =

@@ -3,6 +3,7 @@ const mqttServer = () => {
     const idPlayerUserEsp = null
     const client = mqtt.connect('mqtt://broker.hivemq.com:1883')
     let conMove = true
+    let isOnline = true
     const initServiceMqqt = (socket, store) => {
         if (client) {
             client.on('connect', () => {
@@ -13,7 +14,9 @@ const mqttServer = () => {
             })
 
             client.on('message', (topic, message) => {
-                // รับข้อมูลจาก MQTT server และทำสิ่งที่คุณต้องการ
+                isOnline = true
+                store.services.mqqt.setState(true)
+
                 console.log(
                     `Received message on topic ${topic}: ${message.toString()}`
                 )
@@ -43,8 +46,39 @@ const mqttServer = () => {
                     }
                 } else if (topic === 'sayhi') {
                     store.services.mqqt.setState(true)
+                    const data = store.services.mqqt.getInfo()
+                    socket.server.emit('mqqtStateInUse', {
+                        state: data.idController === null && data.isOnline,
+                        isOnline: data.isOnline,
+                        playerOwner: data.idController,
+                    })
                 }
             })
+            lookUpOnline()
+            function lookUpOnline() {
+                setInterval(() => {
+                    isOnline = false
+                    setTimeout(() => {
+                        if (!isOnline) {
+                            store.services.mqqt.setState(false)
+                            const data = store.services.mqqt.getInfo()
+                            socket.server.emit('mqqtStateInUse', {
+                                state: data.idController === null && data.isOnline,
+                                isOnline: data.isOnline,
+                                playerOwner: data.idController,
+                            })
+                        }
+                        else {
+                            const data = store.services.mqqt.getInfo()
+                            socket.server.emit('mqqtStateInUse', {
+                                state: data.idController === null && data.isOnline,
+                                isOnline: data.isOnline,
+                                playerOwner: data.idController,
+                            })
+                        }
+                    }, 5000);
+                }, 5000);
+            }
 
             client.on('offline', () => {
                 console.log('Disconnected from MQTT broker')
