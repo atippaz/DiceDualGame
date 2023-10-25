@@ -1,11 +1,12 @@
 import { createResponseObj } from '../../helpers/index.js'
 const mqttSocket = (store, socket, mqtt) => {
     const controller = 'mqtt'
-    console.log('mqtt socket Start')
     return {
         startServer: () => {
             socket.on('connection', (_socket) => {
+                console.log('mqtt socket Start')
                 _socket.on(`requestMqqtState`, () => {
+                    console.log('req');
                     const data = store.services.mqqt.getInfo()
                     socket.to(_socket.id).emit('mqqtStateInUse', {
                         state: data.idController === null && data.isOnline,
