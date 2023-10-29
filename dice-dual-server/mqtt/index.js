@@ -10,6 +10,7 @@ const mqttServer = () => {
             client.on('connect', () => {
                 console.log('mqqt Connect to server')
                 client.subscribe('sayhi')
+                client.subscribe('connect')
                 client.subscribe('move')
                 client.subscribe('enter')
             })
@@ -62,6 +63,8 @@ const mqttServer = () => {
                     setTimeout(() => {
                         cooldown = false
                     }, 10000);
+                } else if (topic === 'connect') {
+                    // check your data
                 }
             })
             lookUpOnline()

@@ -19,6 +19,7 @@ const char* mqtt_server = "broker.hivemq.com";
 const int mqtt_port = 1883;
 const char* mqtt_user = "nasakun13201";
 const char* mqtt_password = "pan28060";
+bool isTurn = false;
 IPAddress staticIP(192, 168, 1, 100);  // ตั้งค่าที่อยู่ IP ที่คุณต้องการ
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
@@ -85,16 +86,17 @@ void setup() {
     Serial.println("Connected to MQTT broker");
     // Subscribe to the MQTT topic
     client.subscribe("esp32");
-    client.publish("sayhi", "Hello, MQTT!");
+    client.subscribe("custom");
+    client.publish("connect", "Hello");
   } else {
     Serial.println("Failed to connect to MQTT broker");
   }
   lcd.begin();
   lcd.backlight();
-  lcd.setCursor(0, 0);          // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรตำแหน่งที่0 แถวที่ 1 เตรียมพิมพ์ข้อความะะะะะะะะะะะะ
-  lcd.print("Local ESP32 IP");  //พิมพ์ข้อความ "LCD1602 I2c Test"
-  lcd.setCursor(2, 1);          // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรกำแหน่งที3 แถวที่ 2 เตรียมพิมพ์ข้อความ
-  lcd.print(WiFi.localIP());    //พิมพ์ข้อความ "myarduino.net"
+  lcd.setCursor(0, 0);
+  lcd.print("Local ESP32 IP");
+  lcd.setCursor(2, 1);
+  lcd.print(WiFi.localIP());
 }
 
 void loop() {
@@ -104,57 +106,97 @@ void loop() {
   int valueUp = analogRead(pinUp);
   int valueDown = analogRead(pinDown);
 
-  if (valueLeft > 4000) {
+  if (valueLeft > 4000 && isTurn) {
     isLeft = true;
     isRight = !isLeft;
     isUp = !isLeft;
     Serial.print("left c");
     isDown = !isLeft;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("sending . . .");
+    lcd.setCursor(2, 1);
+    lcd.print("left");
     client.publish("move", "a");
     digitalWrite(leftPin, HIGH);
     delay(1800);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("your turn");
+    lcd.setCursor(2, 1);
+    lcd.print("are u enter?");
     handshake = true;
     digitalWrite(leftPin, LOW);
 
-  } else if (valueRight > 4000) {
+  } else if (valueRight > 4000 && isTurn) {
     isRight = true;
     isLeft = !isRight;
     isUp = !isRight;
     isDown = !isRight;
-
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("sending . . .");
+    lcd.setCursor(2, 1);
+    lcd.print("right");
     client.publish("move", "d");
     Serial.print("right c");
     digitalWrite(p18, HIGH);
     delay(1800);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("your turn");
+    lcd.setCursor(2, 1);
+    lcd.print("are u enter?");
     handshake = true;
     digitalWrite(p18, LOW);
 
-  } else if (valueUp > 4000) {
+  } else if (valueUp > 4000 && isTurn) {
     isUp = true;
     isRight = !isUp;
     isLeft = !isUp;
     Serial.print("up c");
     isDown = !isUp;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("sending . . .");
+    lcd.setCursor(2, 1);
+    lcd.print("up");
     client.publish("move", "w");
     digitalWrite(p17, HIGH);
     delay(1800);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("your turn");
+    lcd.setCursor(2, 1);
+    lcd.print("are u enter?");
     handshake = true;
     digitalWrite(p17, LOW);
 
-  } else if (valueDown > 4000) {
+  } else if (valueDown > 4000 && isTurn) {
     isDown = true;
     isRight = !isDown;
     isUp = !isDown;
     Serial.print("down c");
     isLeft = !isDown;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("sending . . .");
+    lcd.setCursor(2, 1);
+    lcd.print("down");
     client.publish("move", "s");
     digitalWrite(p5, HIGH);
     delay(1800);
+
     handshake = true;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("your turn");
+    lcd.setCursor(2, 1);
+    lcd.print("are u enter?");
     digitalWrite(p5, LOW);
   }
   int buttonState = digitalRead(btnPin);
-  if (buttonState == HIGH && !isClick) {
+  if (buttonState == HIGH && !isClick && isTurn) {
     Serial.print("send : ");
     isClick = true;
     if (isDown) {
@@ -172,6 +214,11 @@ void loop() {
     isLeft = false;
     client.publish("enter", "enter");
     handshake = true;
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("sending . . .");
+    lcd.setCursor(2, 1);
+    lcd.print("enter move");
     delay(2000);
   } else if (buttonState == LOW && isClick) {
     isClick = false;
@@ -179,6 +226,11 @@ void loop() {
   }
 
   if (!client.connected()) {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Esp Offline ");
+    lcd.setCursor(2, 1);
+    lcd.print("try to connect");
     reconnect();
   }
   client.loop();
@@ -202,6 +254,7 @@ void callback(char* topic, byte* message, unsigned int length) {
   Serial.println(messageTemp);
 
   if (String(topic) == "esp32") {
+    isTurn = false;
     Serial.print("Changing output to ");
     if (messageTemp == "enemyturn") {
       digitalWrite(LED4, LOW);
@@ -218,6 +271,7 @@ void callback(char* topic, byte* message, unsigned int length) {
       digitalWrite(pin8, LOW);
       digitalWrite(LED3, HIGH);
       lcd.clear();
+      isTurn = true;
       lcd.setCursor(0, 0);  // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรตำแหน่งที่0 แถวที่ 1 เตรียมพิมพ์ข้อความ
       lcd.setCursor(2, 1);  // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรกำแหน่งที3 แถวที่ 2 เตรียมพิมพ์ข้อความ
       lcd.print("your turn");
@@ -246,13 +300,12 @@ void callback(char* topic, byte* message, unsigned int length) {
         lcd.setCursor(0, 0);
         lcd.setCursor(2, 1);
         lcd.print("your lose");
-      } else if(messageTemp == "yourwin") {
+      } else if (messageTemp == "yourwin") {
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.setCursor(2, 1);
         lcd.print("your win");
-      }
-      else{
+      } else {
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.setCursor(2, 1);
@@ -265,6 +318,26 @@ void callback(char* topic, byte* message, unsigned int length) {
       lcd.setCursor(2, 1);          // กำหนดให้ เคอร์เซอร์ อยู่ตัวอักษรกำแหน่งที3 แถวที่ 2 เตรียมพิมพ์ข้อความ
       lcd.print(WiFi.localIP());    //
     }
+
+  } else if (String(topic) == "custom") {
+    messageTemp = "";
+    String newLine = "";
+    bool foundEnter = false;
+    for (int i = 0; i < length; i++) {
+      if ((char)message[i] == '\n') {
+        foundEnter = true;
+      }
+      if (foundEnter) {
+        newLine += (char)message[i];
+
+      } else {
+        messageTemp += (char)message[i];
+      }
+    }
+    lcd.setCursor(0, 0);
+    lcd.print(messageTemp);
+    lcd.setCursor(2, 1);
+    lcd.print(newLine);
   }
 }
 void reconnect() {
@@ -272,6 +345,11 @@ void reconnect() {
     Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP32Client", mqtt_user, mqtt_password)) {
       Serial.println("connected");
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Local ESP32 IP");
+      lcd.setCursor(2, 1);
+      lcd.print(WiFi.localIP());
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
