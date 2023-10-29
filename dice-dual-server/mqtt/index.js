@@ -38,7 +38,7 @@ const mqttServer = () => {
                             conMove = true
                         }, 1000)
                     } else {
-                        console.log('not found')
+                        console.log(message.toString() + '  not found')
                     }
                 } else if (topic === 'enter') {
                     const id = store.services.socket.getSocketId(
