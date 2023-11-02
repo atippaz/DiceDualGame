@@ -15,7 +15,11 @@ const socketService = {
             socketState.find(x => x.playerId === playerId).socketId === socketId
         }
     },
-    getSocketId: getSocketId
+    getSocketId: getSocketId,
+    removeSocketId: (socketId) => {
+        const id = socketState.findIndex(x => x.socketId === socketId)
+        if (id != -1) socketState.splice(id, 1);
+    }
 }
 const socketState = []
 export { socketService, socketState }

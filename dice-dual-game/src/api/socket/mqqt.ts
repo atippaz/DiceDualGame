@@ -5,7 +5,6 @@ import { type Socket } from 'socket.io-client'
 
 export default (
     mqqtStateHandle: (
-        state: boolean,
         playerOwner: string | null,
         isOnline: boolean
     ) => void
@@ -21,13 +20,12 @@ export default (
             {
                 nameEvent: 'mqqtStateInUse',
                 fn: (data: {
-                    state: boolean
                     isOnline: boolean
                     playerOwner: string | null
                 }) => {
                     console.log('socket in use: ' + data)
-                    const { state, playerOwner, isOnline } = data
-                    mqqtStateHandle(state, playerOwner, isOnline)
+                    const { playerOwner, isOnline } = data
+                    mqqtStateHandle(playerOwner, isOnline)
                 },
             },
         ]
@@ -40,13 +38,15 @@ export default (
             resetSocket()
         },
         connect: () => {
-            if (!socket) {
+            if (!socket && !socketHasInit) {
                 socket = SocketInstance().socket
                 socketMapOnListeningEventInit()
                 socketMapOnListeningEvent.forEach((e) =>
                     socket.on(e.nameEvent, (data) => e.fn(data))
                 )
-                socket.emit('requestMqqtState')
+                socket.emit('requestMqqtState', true)
+
+                console.log('request mqqt')
             }
         },
         useMqqt: (playerId: string) => {

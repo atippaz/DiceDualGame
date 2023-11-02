@@ -19,7 +19,7 @@ const mqqtService = {
         return mqqtState
     },
     setState: (state) => {
-        return (mqqtState.isOnline = state)
+        mqqtState.isOnline = state
     },
 }
 const mqqtState = {

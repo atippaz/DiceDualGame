@@ -1,7 +1,6 @@
 import { createResponseObj } from '../../helpers/index.js'
 const mqttSocket = (store, socket, mqtt) => {
     const controller = 'mqtt'
-    console.log('mqtt socket Start')
     return {
         startServer: () => {
             socket.on('connection', (_socket) => {
@@ -12,6 +11,7 @@ const mqttSocket = (store, socket, mqtt) => {
                         isOnline: data.isOnline,
                         playerOwner: data.idController,
                     })
+                    console.log('req');
                 })
                 _socket.on('useMqqt', (playerId) => {
                     store.services.mqqt.assignControllerId(playerId)
@@ -27,7 +27,6 @@ const mqttSocket = (store, socket, mqtt) => {
                     store.services.mqqt.removeControllerId()
                     const data = store.services.mqqt.getInfo()
                     socket.emit('mqqtStateInUse', {
-                        state: data.idController === null && data.isOnline,
                         isOnline: data.isOnline,
                         playerOwner: data.idController,
                     })

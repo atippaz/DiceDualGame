@@ -7,12 +7,7 @@
             <v-row>
                 <v-col>
                     <div>xo Room List</div>
-                    <v-data-table
-                        :headers="headers"
-                        :items="xoRoomList"
-                        item-value="name"
-                        class="elevation-1"
-                    >
+                    <v-data-table :headers="headers" :items="xoRoomList" item-value="name" class="elevation-1">
                         <template v-slot:item.started="{ item }">
                             <div>
                                 {{ item.started ? 'starting' : 'waiting' }}
@@ -20,32 +15,16 @@
                         </template>
                         <template v-slot:bottom> </template>
                         <template v-slot:item.actions="{ item }">
-                            <v-btn
-                                v-if="item.canJoin"
-                                @click="joinRoom(item.roomId)"
-                                >Join Room</v-btn
-                            >
-                            <v-btn
-                                v-if="item.canView"
-                                @click="viewRoom(item.roomId)"
-                                >View Room</v-btn
-                            >
-                            <v-btn
-                                v-if="item.canResume"
-                                @click="resume(item.roomId)"
-                                >resume
+                            <v-btn v-if="item.canJoin" @click="joinRoom(item.roomId)">Join Room</v-btn>
+                            <v-btn v-if="item.canView" @click="viewRoom(item.roomId)">View Room</v-btn>
+                            <v-btn v-if="item.canResume" @click="resume(item.roomId)">resume
                             </v-btn>
                         </template>
                     </v-data-table>
                 </v-col>
                 <v-col>
                     <div>Current Room</div>
-                    <v-data-table
-                        :headers="headers"
-                        :items="currentRoom"
-                        item-value="name"
-                        class="elevation-1"
-                    >
+                    <v-data-table :headers="headers" :items="currentRoom" item-value="name" class="elevation-1">
                         <template v-slot:bottom> </template>
                         <template v-slot:item.started="{ item }">
                             <div>
@@ -53,20 +32,9 @@
                             </div>
                         </template>
                         <template v-slot:item.actions="{ item }">
-                            <v-btn
-                                v-if="item.canJoin"
-                                @click="joinRoom(item.roomId)"
-                                >Join Room</v-btn
-                            >
-                            <v-btn
-                                v-if="item.canView"
-                                @click="viewRoom(item.roomId)"
-                                >View Room</v-btn
-                            >
-                            <v-btn
-                                v-if="item.canResume"
-                                @click="resume(item.roomId)"
-                                >resume
+                            <v-btn v-if="item.canJoin" @click="joinRoom(item.roomId)">Join Room</v-btn>
+                            <v-btn v-if="item.canView" @click="viewRoom(item.roomId)">View Room</v-btn>
+                            <v-btn v-if="item.canResume" @click="resume(item.roomId)">resume
                             </v-btn>
                         </template>
                     </v-data-table>
@@ -77,35 +45,23 @@
             <v-card>
                 <v-card-title>Create Room</v-card-title>
                 <v-card-text>
-                    <v-text-field
-                        v-model="roomName"
-                        label="room name"
-                    ></v-text-field>
-                    <v-text-field
-                        v-model="boardSize"
-                        type="number"
-                        label="board size game"
-                    ></v-text-field>
+                    <v-text-field v-model="roomName" label="room name"></v-text-field>
+                    <v-text-field v-model="boardSize" type="number" label="board size game"></v-text-field>
                     <div class="d-flex justify-end">
+                        {{ statemqqt }}
                         <p class="text-mute">
                             Esp32 State:{{
                                 mqqtIsOnline ? 'online' : 'offline'
                             }}
                         </p>
                     </div>
-                    <v-switch
-                        v-if="mqqtIsOnline"
-                        label="Esp32 Setting"
-                        v-model="useEsp32"
-                        :disabled="!canUseEsp32"
-                        hide-details
-                    ></v-switch>
+                    <v-switch v-if="mqqtIsOnline" label="Esp32 Setting" v-model="useEsp32" :disabled="!canUseEsp32"
+                        hide-details></v-switch>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn @click="closeDialogCreate" color="error">
-                        close</v-btn
-                    >
+                        close</v-btn>
 
                     <v-btn @click="createRoom" color="success"> create</v-btn>
                 </v-card-actions>
@@ -146,6 +102,7 @@ const dialogCreate = ref(false)
 const boardSize = ref(3)
 // const socket = Socket().socket
 const mqqt = MqqtSocket(handleMqqtState)
+mqqt.connect()
 const data = ref('')
 const roomName = ref('')
 const roomid = ref('')
@@ -170,15 +127,20 @@ const headers = ref([
     { title: '', key: 'actions', sortable: false },
 ])
 let timer: any = null
+const statemqqt: any = ref(5555)
 function handleMqqtState(
-    state: boolean,
+
     playerOwner: string | null,
     isOnline: boolean
 ) {
-    canUseEsp32.value = !(
-        (state && playerOwner === playerId) ||
-        playerOwner === null
-    )
+    statemqqt.value = {
+
+        playerOwner: playerOwner,
+        isOnline: isOnline
+    }
+    canUseEsp32.value =
+        playerOwner === null ? isOnline : playerOwner === playerId && isOnline
+
     mqqtIsOnline.value = isOnline
 }
 function initDataRoom() {

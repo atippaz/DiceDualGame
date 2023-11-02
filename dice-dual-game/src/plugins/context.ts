@@ -42,7 +42,7 @@ function $context() {
     }
     syncToken()
     return {
-        token: computed(() => _token.value),
+        token: computed(() => localStorage.getItem('userToken') || ''),
         userId: computed(() => _userId.value),
         updateUserId,
         updateToken,

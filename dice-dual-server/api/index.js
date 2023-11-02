@@ -11,7 +11,7 @@ const api = async function (socket = null, store = null, mqqt) {
     server.use(cors())
 
     server.get('/', (req, res) => {
-        res.send({ data: 'hi V.1.5.6', statusCode: 200 })
+        res.send({ data: 'hi V.1.5.7', statusCode: 200 })
     })
     server.get('/openLight', (req, res) => {
         mqqt.enemyTurn()
@@ -28,7 +28,7 @@ const api = async function (socket = null, store = null, mqqt) {
     server.get('/emergencyGetAllData', (req, res) => {
         res.status(200).json(store.function.getAll())
     })
-    server.use(routes(socket, store))
+    server.use(routes(socket, store, mqqt))
 
     return server.listen(port, async (err, result) => {
         try {

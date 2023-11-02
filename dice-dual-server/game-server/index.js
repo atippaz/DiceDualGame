@@ -3,7 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import xoGame from './xoGame/index.js'
 import chat from './chatRoom/index.js'
-import mqtt from './mqttControl/index.js'
+import Mqtt from './mqttControl/index.js'
 import middleWare from './middleware/index.js'
 
 const initial = (store, mqqt) => {
@@ -11,8 +11,14 @@ const initial = (store, mqqt) => {
     const port = process.env.PORT_GAME_SERVER || 888
     server.use(cors())
     server.use(middleWare)
+    let initMqqt = false
+
     const app = server.listen(port, function (err, result) {
         console.log('running in socket port http://localhost:' + port)
+        if (!initMqqt) {
+            initMqqt = true
+            Mqtt(store, gameServer, mqqt).startServer()
+        }
     })
     const gameServer = new SocketIOServer(app, {
         cors: {
@@ -21,8 +27,8 @@ const initial = (store, mqqt) => {
         transports: ['polling', 'websocket'],
     })
     let initSocket = false
+
     let initChatRoom = false
-    mqtt(store, gameServer, mqtt).startServer()
     return {
         createRoom: () => {
             console.log('start socket init')
