@@ -1,10 +1,13 @@
 <template>
     <div
         v-if="detail"
-        class="w-100 h-100"
-        style="background-color: rgb(255, 234, 207)"
+        class="w-100 h-100 ma-8"
+        style="background-color: rgb(255, 255, 255)"
     >
-        <div style="height: 10%">
+    <div class="">
+        <div>
+
+        <div style="height: 10%" >
             <div>Room Name:{{ dataDetail.roomName }}</div>
             {{ myData?.player }} VS
             {{ enemyData ? enemyData.player : 'waiting . . . ' }}
@@ -70,6 +73,9 @@
             </div>
         </div>
     </div>
+</div>
+
+</div>
 </template>
 
 <script lang="ts" setup>
