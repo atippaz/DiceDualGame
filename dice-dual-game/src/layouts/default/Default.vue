@@ -2,7 +2,7 @@
     <v-app>
         <default-bar />
         <v-main class="h-100">
-            <div style="background-color: rgb(193, 193, 193)" class="h-100">
+            <div style="background-color: rgb(217, 217, 217)" class="h-100">
                 <default-view />
             </div>
         </v-main>

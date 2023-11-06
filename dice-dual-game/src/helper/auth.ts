@@ -1,10 +1,11 @@
-import router from '@/router/index'
+// import router from '@/router/index'
 import { getContext } from '@/context'
 import _accountApi from '../api/account/index'
 import { contextPluginSymbol } from '@/plugins/context'
 import jwt_decode from 'jwt-decode'
 const context = getContext().inject(contextPluginSymbol)
 const accountApi = _accountApi()
+const router = getContext().router
 function setToken(token: string) {
     localStorage.setItem('userToken', token)
 }
@@ -20,14 +21,9 @@ function login(username: string, password: string) {
             const token = e.data.token as string
             setToken(token)
             const decoded = jwt_decode(token) as any
-            console.log(context)
-            console.log(token)
-            console.log(decoded)
-
             context?.updateToken(token)
             context?.updateUserId(decoded.userId)
             router.push({ name: 'Home' })
-            console.log('go home nah')
         }
     })
 }

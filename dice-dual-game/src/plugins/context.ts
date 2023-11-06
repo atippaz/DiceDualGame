@@ -18,8 +18,6 @@ function $context() {
             localStorage.removeItem('userToken')
             return
         }
-        console.log(token)
-
         _token.value = token
     }
     function updateUserId(userId: string) {
@@ -34,7 +32,6 @@ function $context() {
                 _token.value === null
                     ? ''
                     : (jwt_decode(_token.value) as any).userId
-            console.log(_userId.value)
         } catch (er) {
             console.log(er)
             localStorage.removeItem('userToken')
@@ -42,7 +39,7 @@ function $context() {
     }
     syncToken()
     return {
-        token: computed(() => localStorage.getItem('userToken') || ''),
+        token: computed(() => _token.value || ''),
         userId: computed(() => _userId.value),
         updateUserId,
         updateToken,

@@ -138,7 +138,6 @@ function callBackJoin(mes: string) {
 }
 function callBackRoomData(data: RoomGameData) {
     detail.value = data
-    // console.log(data)
 }
 function callBackUpdateBoardCell(data: {
     target: { row: number | string; col: number | string }

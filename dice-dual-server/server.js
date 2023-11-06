@@ -13,7 +13,6 @@ async function startUp() {
     Api(socket, store, mqqt)
     await socket.createRoom()
     mqqt.initServiceMqqt(socket, store)
-    console.log('success')
 }
 
 startUp()

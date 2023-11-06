@@ -45,8 +45,6 @@ export default (
                     socket.on(e.nameEvent, (data) => e.fn(data))
                 )
                 socket.emit('requestMqqtState', true)
-
-                console.log('request mqqt')
             }
         },
         useMqqt: (playerId: string) => {

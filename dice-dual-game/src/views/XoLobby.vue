@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <div class="mx-6">
         <div class="d-flex justify-end px-4">
-            <v-btn @click="dialogCreate = true"> create room</v-btn>
+            <Btn background="hsl(69, 100%, 60%)" edge="hsl(69, 77%, 36%)" @click="dialogCreate = true"> create room</Btn>
         </div>
         <v-container fluid>
             <v-row>
                 <v-col>
-                    <div>xo Room List</div>
+                    <div class="mb-2 ml-1">xo Room List</div>
                     <v-data-table :headers="headers" :items="xoRoomList" item-value="name" class="elevation-1">
                         <template v-slot:item.started="{ item }">
                             <div>
@@ -14,16 +14,15 @@
                             </div>
                         </template>
                         <template v-slot:bottom> </template>
-                        <template v-slot:item.actions="{ item }">
-                            <v-btn v-if="item.canJoin" @click="joinRoom(item.roomId)">Join Room</v-btn>
-                            <v-btn v-if="item.canView" @click="viewRoom(item.roomId)">View Room</v-btn>
-                            <v-btn v-if="item.canResume" @click="resume(item.roomId)">resume
-                            </v-btn>
+                        <template v-slot:item.actions="{ item }" style="padding: 12px;">
+                            <Btn edge="hsl(128, 72%, 23%)" width="12" height="7"  font-size="12px" background="hsl(128, 100%, 57%)" v-if="item.canJoin" @click="joinRoom(item.roomId)">Join Room</Btn>
+                            <Btn edge="hsl(128, 72%, 23%)" width="12" height="7"  font-size="12px" background="hsl(128, 100%, 57%)" v-if="item.canView" @click="viewRoom(item.roomId)">View Room</Btn>
+                            <Btn edge="hsl(128, 72%, 23%)" width="12" height="7"  font-size="12px" background="hsl(128, 100%, 57%)" v-if="item.canResume" @click="resume(item.roomId)">resume</Btn>
                         </template>
                     </v-data-table>
                 </v-col>
                 <v-col>
-                    <div>Current Room</div>
+                    <div class="mb-2 ml-1">Current Room</div>
                     <v-data-table :headers="headers" :items="currentRoom" item-value="name" class="elevation-1">
                         <template v-slot:bottom> </template>
                         <template v-slot:item.started="{ item }">
@@ -32,10 +31,9 @@
                             </div>
                         </template>
                         <template v-slot:item.actions="{ item }">
-                            <v-btn v-if="item.canJoin" @click="joinRoom(item.roomId)">Join Room</v-btn>
-                            <v-btn v-if="item.canView" @click="viewRoom(item.roomId)">View Room</v-btn>
-                            <v-btn v-if="item.canResume" @click="resume(item.roomId)">resume
-                            </v-btn>
+                            <Btn edge="hsl(128, 72%, 23%)" width="12" height="7"  font-size="12px" background="hsl(128, 100%, 57%)" v-if="item.canJoin" @click="joinRoom(item.roomId)">Join Room</Btn>
+                            <Btn edge="hsl(128, 72%, 23%)" width="12" height="7"  font-size="12px" background="hsl(128, 100%, 57%)" v-if="item.canView" @click="viewRoom(item.roomId)">View Room</Btn>
+                            <Btn edge="hsl(128, 72%, 23%)" width="12" height="7"  font-size="12px" background="hsl(128, 100%, 57%)" v-if="item.canResume" @click="resume(item.roomId)">resume</Btn>
                         </template>
                     </v-data-table>
                 </v-col>
@@ -48,7 +46,6 @@
                     <v-text-field v-model="roomName" label="room name"></v-text-field>
                     <v-text-field v-model="boardSize" type="number" label="board size game"></v-text-field>
                     <div class="d-flex justify-end">
-                        {{ statemqqt }}
                         <p class="text-mute">
                             Esp32 State:{{
                                 mqqtIsOnline ? 'online' : 'offline'
@@ -71,6 +68,7 @@
 </template>
 
 <script lang="ts" setup>
+import Btn from '@/components/Button3D.vue'
 import { ref, onBeforeUnmount } from 'vue'
 import { getContext } from '@/context'
 import { contextPluginSymbol } from '@/plugins/context'
@@ -87,12 +85,9 @@ import { watch } from 'vue'
 watch(
     () => useEsp32.value,
     (newValue) => {
-        console.log(newValue)
         if (newValue) {
-            console.log('ใช้')
             mqqt.useMqqt(playerId)
         } else {
-            console.log('ไม่ใช้')
             mqqt.unUseMqqt()
         }
     }
@@ -176,7 +171,6 @@ function initDataRoom() {
             currentRoom.value = xoData as []
         }
     })
-    console.log('get Data')
     if (timer === null) {
         timer = setInterval(initDataRoom, 1000 * 60 * 5)
     }
@@ -242,3 +236,8 @@ onBeforeUnmount(() => {
     clearInterval(timer)
 })
 </script>
+<style lang="scss" scoped>
+// .v-table:deep(.v-data-table__tr){
+// padding: 12px 0px;
+// }
+</style>
