@@ -1,84 +1,119 @@
 <template>
-    <div
-        v-if="detail"
-        class="w-100 h-100 ma-8"
-        style="background-color: rgb(255, 255, 255)"
-    >
-    <div class="">
-        <div>
+    <div v-if="detail" class="ma-8">
+        <div class="w-100 h-100">
+            <div>
+                <div style="height: 10%">
+                    <div>Room Name : {{ dataDetail.roomName }}</div>
 
-        <div style="height: 10%" >
-            <div>Room Name:{{ dataDetail.roomName }}</div>
-            {{ myData?.player }} VS
-            {{ enemyData ? enemyData.player : 'waiting . . . ' }}
-            <div>{{ dataDetail }}</div>
-            <v-btn
-                v-if="!hideStartGameBtn"
-                :disabled="!dataDetail.canStart"
-                @click="startGame"
-                >startGame</v-btn
-            >
-            <div v-if="boardGameData != null && boardGameData && yourPlayer">
-                {{
-                    boardGameData?.roundPlayerId === playerId
-                        ? 'Your Turn'
-                        : 'Enemy Turn'
-                }}
-
-                your symbol is :
-                {{
-                    boardGameData.dataSymbol.find(
-                        (e) => e.playerId === playerId
-                    )!.symbol
-                }}
-            </div>
-            <div v-else-if="boardGameData != null && boardGameData">
-                <span v-for="dataplayer in boardGameData.dataSymbol">
-                    player : {{ dataplayer.playerName }} use :
-                    {{ dataplayer.symbol }}
-                </span>
-            </div>
-            {{ gameResultLabel }}
-            {{ timeOutLabel }}
-        </div>
-        <div style="height: 90%">
-            <div class="w-100 h-100">
-                <div class="d-flex justify-end">
-                    <v-btn @click="showSlider = !showSlider"
-                        >close slider</v-btn
+                    <v-container fluid>
+                        <v-row>
+                            <v-col class="d-flex justify-start">
+                                {{ myData?.player }}</v-col
+                            >
+                            <v-col class="d-flex justify-center">
+                                <span style="color: rgb(118, 0, 0)"> V </span>
+                                <span style="color: rgb(29, 0, 125)"> S </span>
+                            </v-col>
+                            <v-col class="d-flex justify-end">
+                                {{
+                                    enemyData
+                                        ? enemyData.player
+                                        : 'waiting . . . '
+                                }}
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                    <div
+                        v-if="
+                            boardGameData != null && boardGameData && yourPlayer
+                        "
                     >
+                        <div v-if="gameResultLabel === ''">
+                            {{
+                                boardGameData?.roundPlayerId === playerId
+                                    ? 'Your Turn'
+                                    : 'Enemy Turn'
+                            }}
+                        </div>
+
+                        your symbol is :
+                        {{
+                            boardGameData.dataSymbol.find(
+                                (e) => e.playerId === playerId
+                            )!.symbol
+                        }}
+                    </div>
+                    <div v-else-if="boardGameData != null && boardGameData">
+                        <span v-for="dataplayer in boardGameData.dataSymbol">
+                            player : {{ dataplayer.playerName }} use :
+                            {{ dataplayer.symbol }}
+                        </span>
+                    </div>
+                    {{ gameResultLabel }} <br>
+                    {{ timeOutLabel }}
                 </div>
-                <v-slider
-                    v-if="showSlider"
-                    v-model="boardsize"
-                    min="300"
-                    max="2000"
-                    label="boardsize"
-                    thumb-label
-                ></v-slider>
-                <div class="d-flex justify-center align-center">
-                    <div :style="`width: ${boardsize}px; aspect-ratio: 1`">
-                        <XoMainBoard
-                            :boardState="boardState"
-                            :canMove="
-                                boardGameData?.canMove &&
-                                boardGameData.roundPlayerId === playerId
-                            "
-                            @move="move"
-                            :isController="isController"
-                            :currentPosition="currentPosition"
-                        />
+                <div style="height: 90%">
+                    <div class="w-100 h-100 mt-4">
+                        <div class="d-flex">
+                            <div>
+                                <Btn
+                                    v-if="!hideStartGameBtn"
+                                    background="#A6CF98"
+                                    edge="#557C55"
+                                    font-size="12px"
+                                    :disabled="!dataDetail.canStart"
+                                    @click="startGame"
+                                    >startGame</Btn
+                                >
+                            </div>
+                            <v-spacer></v-spacer>
+                            <div class="d-flex justify-end">
+                                <Btn
+                                    @click="showSlider = !showSlider"
+                                    font-size="12px"
+                                    >{{
+                                        showSlider
+                                            ? 'close slider'
+                                            : 'open slider'
+                                    }}</Btn
+                                >
+                            </div>
+                        </div>
+
+                        <v-slider
+                            v-if="showSlider"
+                            v-model="boardsize"
+                            min="300"
+                            max="2000"
+                            label="boardsize"
+                            thumb-label
+                            class="mt-4"
+                        ></v-slider>
+                        <div class="d-flex justify-center align-center">
+                            <div
+                                :style="`width: ${boardsize}px; aspect-ratio: 1`"
+                            >
+                                <XoMainBoard
+                                    :boardState="boardState"
+                                    :canMove="
+                                        boardGameData?.canMove &&
+                                        boardGameData.roundPlayerId === playerId
+                                    "
+                                    @move="move"
+                                    :isController="isController"
+                                    :currentPosition="currentPosition"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-</div>
 </template>
 
 <script lang="ts" setup>
+import Btn from '@/components/Button3D.vue'
 import { ref, onBeforeUnmount, computed } from 'vue'
 import { xoGameApi } from '@/api/index'
 import { useRouter, useRoute } from 'vue-router'
@@ -87,7 +122,7 @@ import { RoomGameData, BoardGameData } from '@/interface/socket'
 import Socket from '@/api/socket/xoGame'
 import { getContext } from '@/context'
 import { contextPluginSymbol } from '@/plugins/context'
-const boardsize = ref(600)
+const boardsize = ref(450)
 const router = useRouter()
 const rout = useRoute()
 const roomId = ref(rout.query.roomId)
@@ -95,7 +130,7 @@ const boardGameData = ref<BoardGameData>()
 const boardState = ref()
 const timeOutLabel = ref('')
 const gameResultLabel = ref('')
-const showSlider = ref(true)
+const showSlider = ref(false)
 const socket = Socket(
     callBackJoin,
     callBackRoomData,
@@ -272,7 +307,9 @@ function initial() {
                 } else {
                     detail.value = e.data as RoomGameData
                     socket.join(roomId.value as string, detail.value.started)
+                    hideStartGameBtn.value = detail.value.owner !== playerId
                     if (detail.value.started) {
+                        hideStartGameBtn.value = true
                         xoGameApi
                             .getBoardGameData(roomId.value as string)
                             .then((e) => {
@@ -300,3 +337,8 @@ onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKeyPress)
 })
 </script>
+<style scoped lang="scss">
+:deep(.v-slider__label) {
+    font-size: 12px;
+}
+</style>

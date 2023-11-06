@@ -43,7 +43,6 @@ const props = defineProps({
   width: 100%;
   height: 100%;
   border-radius: 12px;
-  // background: hsl(128, 72%, 23%);
 }
 .front {
   display: block;
@@ -59,22 +58,22 @@ const props = defineProps({
 }
 
 .pushable:disabled .front {
-  background: hsl(0, 0%, 81%) !important;
+  background: hsl(0, 0%, 83%) !important;
   transform: translateY(-3px);
 }
 .pushable:hover:disabled {
   cursor: not-allowed;
 }
-.pushable:disabled .front {
-  background: hsl(0, 0%, 81%) !important;
-  transform: translateY(-2px);
-
-}
 .pushable:disabled .shadow {
   background: hsl(0deg 0% 0% / 0.25) !important;
   transform: translateY(1px);
 }
+.pushable:disabled .edge {
+  background: hsl(0, 0%, 35%) !important;
 
+  background: hsl(0deg 0% 0% / 0.25) !important;
+  transform: translateY(1px);
+}
 .pushable:hover:not(:disabled) .front {
   transform: translateY(-6px);
 }

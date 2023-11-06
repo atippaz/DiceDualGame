@@ -1,11 +1,11 @@
 <template>
     <div
-        class="rounded-xl w-100 h-100 pa-4 "
-        style="background-color: rgb(112, 112, 112)"
+        class="w-100 h-100 pa-3"
+        style="background-color: rgb(56, 56, 56);border-radius: 24px;"
     >
         <div
             class="rounded-xl w-100 h-100 container"
-            style="background-color: rgb(211, 211, 211)"
+            style="background-color: rgb(147, 147, 147)"
         >
             <div class="box box-child" v-for="(i, indexI) in boardState">
                 <div class="container-row d-flex align-center">
@@ -16,7 +16,7 @@
                         <div class="ma-1 w-100">
                             <div
                                 class="rounded-xl h-100 d-flex align-center pa-6"
-                                style="background-color: rgb(244, 244, 244)"
+                                :style="(indexJ+indexI)%2==0?'background-color: rgb(211, 211, 211)':'background-color: rgb(169,169,169)'"
                                 :class="{
                                     'current-select':
                                         props.isController &&

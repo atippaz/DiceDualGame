@@ -11,7 +11,6 @@
                         <a href="register">register</a>
                         <v-spacer></v-spacer>
                         <Btn background="#A6CF98" edge="#557C55" @click="login">login</Btn>
-
                     </div>
                    
                 </div>
