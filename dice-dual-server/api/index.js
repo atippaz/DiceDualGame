@@ -3,6 +3,8 @@ import bodyParser from 'body-parser'
 import routes from './routes/index.js'
 import cors from 'cors'
 import config from './config.js'
+import { resolve } from 'path';
+
 const server = express()
 const port = process.env.PORT_API || 9000
 const api = async function (socket = null, store = null, mqqt) {
@@ -12,6 +14,9 @@ const api = async function (socket = null, store = null, mqqt) {
 
     server.get('/', (req, res) => {
         res.send({ data: 'hi V.1.5.7', statusCode: 200 })
+    })
+    server.get('/qrcode', (req, res) => {
+        res.sendFile(resolve('../qrcode.svg'));
     })
     server.get('/openLight', (req, res) => {
         mqqt.enemyTurn()
