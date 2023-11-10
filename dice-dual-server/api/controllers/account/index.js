@@ -8,7 +8,9 @@ export default (socket, store) => {
     return {
         async getUserWithJwt(req, res) {
             try {
-                const user = await getUserOneWithOutPassword({ _id: req.user.userId })
+                const user = await getUserOneWithOutPassword({
+                    _id: req.user.userId,
+                })
                 res.json({
                     statusCode: 409,
                     data: {
@@ -40,6 +42,20 @@ export default (socket, store) => {
         async registerUser(req, res) {
             try {
                 const { name, password, username } = await req.body
+            if (
+                name.trim() === '' ||
+                password.trim() === '' ||
+                username.trim() === ''
+            ) {
+                return responseData(
+                    res,
+                    403,
+                    {
+                        message: 'value forbidden',
+                    },
+                    403
+                )
+            }
                 const user = await getUserOne({
                     $or: [{ username }],
                 })
@@ -87,6 +103,16 @@ export default (socket, store) => {
         async login(req, res) {
             try {
                 const { username, password } = await req.body
+                if (username.trim() === '' || password.trim() === '') {
+                    return responseData(
+                        res,
+                        403,
+                        {
+                            message: 'value forbidden',
+                        },
+                        403
+                    )
+                }
                 const user = await getUserOne({ username })
                 if (!user) {
                     return res.status(401).json({ message: 'Invalid username' })

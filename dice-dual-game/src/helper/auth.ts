@@ -16,6 +16,10 @@ function logout(): void {
 }
 
 function login(username: string, password: string) {
+    if (username === '' || password === '') {
+        alert('please enter all field')
+        return
+    }
     accountApi.login(username, password).then((e) => {
         if (e.statusCode === 200) {
             const token = e.data.token as string
@@ -25,7 +29,9 @@ function login(username: string, password: string) {
             context?.updateToken(token)
             context?.updateUserId(decoded.userId)
             router.push({ name: 'Home' })
+            return
         }
+        alert("login don't success")
     })
 }
 function isLogin() {

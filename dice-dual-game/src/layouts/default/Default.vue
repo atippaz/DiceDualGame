@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <default-bar />
+        <default-bar :show-menu="true"/>
         <v-main class="h-100">
             <div style="background-color: rgb(217, 217, 217)" class="h-100">
                 <default-view />

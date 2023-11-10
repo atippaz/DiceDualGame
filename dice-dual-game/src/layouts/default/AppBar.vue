@@ -1,10 +1,10 @@
 <template>
     <v-app-bar flat style="box-shadow: 1px 3px 4px #b8b8b8;">
-        <v-app-bar-title  @click="router.push({name:'Home'})" style="cursor: pointer;">
-            <p style="font-weight: bold" >Arcade Game</p>
+        <v-app-bar-title >
+            <span  @click="router.push({name:'Home'})"  style="cursor: pointer;font-weight: bold" >Arcade Game</span>
         </v-app-bar-title>
         <template v-slot:append>
-            <v-menu>
+            <v-menu v-if="props.showMenu">
                 <template v-slot:activator="{ props }">
                     <v-btn icon="mdi-dots-vertical" v-bind="props"></v-btn>
                 </template>
@@ -45,4 +45,5 @@
 import Btn from '@/components/Button3D.vue'
 import { logout, goToLoginPage, isLogin, goToRegisterPage } from '@/helper/auth'
 import router from '@/router';
+const props = defineProps<{showMenu:boolean}>()
 </script>

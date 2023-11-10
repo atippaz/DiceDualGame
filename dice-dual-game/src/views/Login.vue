@@ -25,6 +25,6 @@ import { ref } from 'vue'
 const password = ref('')
 const username = ref('')
 
-const login = () => loginApi(username.value, password.value)
+const login = () => loginApi(username.value.trim(), password.value.trim())
 
 </script>
