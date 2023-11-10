@@ -1,11 +1,289 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Say Hi</title>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Landind Page</title>
+        <link
+            href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,600"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="dist/css/style.css" />
+        <script src="https://unpkg.com/animejs@3.0.1/lib/anime.min.js"></script>
+        <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
     </head>
-    <body>
-        Say hi i am atippa dev
+    <body class="is-boxed has-animations">
+        <div class="navbar"></div>
+        <div class="body-wrap">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-header-inner">
+                        <div class="brand header-brand">
+                            <h1 class="m-0">
+                                <a href="#">
+                                    <img
+                                        class="header-logo-image"
+                                        src="dist/images/logo.svg"
+                                        alt="Logo"
+                                    />
+                                </a>
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main>
+                <section class="hero">
+                    <div class="container">
+                        <div class="hero-inner">
+                            <div class="hero-copy">
+                                <h1 class="hero-title mt-0">
+                                    Hi Welcome To My Landing Page
+                                </h1>
+                                <p class="hero-paragraph"></p>
+                            </div>
+                            <div class="hero-figure anime-element">
+                                <svg
+                                    class="placeholder"
+                                    width="528"
+                                    height="396"
+                                    viewBox="0 0 528 396"
+                                >
+                                    <rect
+                                        width="528"
+                                        height="396"
+                                        style="fill: transparent"
+                                    />
+                                </svg>
+                                <div
+                                    class="hero-figure-box hero-figure-box-01"
+                                    data-rotation="45deg"
+                                ></div>
+                                <div
+                                    class="hero-figure-box hero-figure-box-02"
+                                    data-rotation="-45deg"
+                                ></div>
+                                <div
+                                    class="hero-figure-box hero-figure-box-03"
+                                    data-rotation="0deg"
+                                ></div>
+                                <div
+                                    class="hero-figure-box hero-figure-box-04"
+                                    data-rotation="-135deg"
+                                ></div>
+                                <div
+                                    class="hero-figure-box hero-figure-box-05"
+                                ></div>
+                                <div
+                                    class="hero-figure-box hero-figure-box-06"
+                                ></div>
+                                <div
+                                    class="hero-figure-box hero-figure-box-07"
+                                ></div>
+                                <div
+                                    class="hero-figure-box hero-figure-box-08"
+                                    data-rotation="-22deg"
+                                ></div>
+                                <div
+                                    class="hero-figure-box hero-figure-box-09"
+                                    data-rotation="-52deg"
+                                ></div>
+                                <div
+                                    class="hero-figure-box hero-figure-box-10"
+                                    data-rotation="-50deg"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="pricing section">
+                    <div class="container-sm">
+                        <div class="pricing-inner section-inner">
+                            <div class="pricing-header text-center">
+                                <h2 class="section-title mt-0">Play My Game</h2>
+                                <p class="section-paragraph mb-0">
+                                    An online game website developed with VueJs
+                                    and ExpressJs. Currently there are games to
+                                    play, namely XoGame, and others are being
+                                    developed to be played in the future.
+                                </p>
+                            </div>
+                            <div class="pricing-tables-wrap">
+                                <div class="pricing-table">
+                                    <div
+                                        class="pricing-table-inner is-revealing"
+                                    >
+                                        <div class="pricing-table-main">
+                                            <div
+                                                class="pricing-table-header pb-24"
+                                            >
+                                                <div
+                                                    class="pricing-table-price"
+                                                >
+                                                    <span
+                                                        class="pricing-table-price-currency h2"
+                                                    ></span
+                                                    ><span
+                                                        class="pricing-table-price-amount h1"
+                                                        >XoGame</span
+                                                    ><span
+                                                        class="text-xs"
+                                                    ></span>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="pricing-table-features-title text-xs pt-24 pb-24"
+                                            >
+                                                <img
+                                                    src="dist/images/xoIcon.png"
+                                                />
+                                            </div>
+                                            <ul
+                                                class="pricing-table-features list-reset text-xs"
+                                            >
+                                                <li>
+                                                    <span>2 Player</span>
+                                                </li>
+                                                <li>
+                                                    <span>Can Scale Board</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="pricing-table-cta mb-8">
+                                            <a
+                                                class="button button-primary button-shadow button-block"
+                                                href="https://arcadegame.atipnasakun.online"
+                                                >Go To Play</a
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="features section">
+                    <div class="container">
+                        <div
+                            class="features-inner section-inner has-bottom-divider"
+                        >
+                            <h2>Api Provider</h2>
+                            <div class="features-wrap">
+                                <div class="feature text-center is-revealing">
+                                    <div class="feature-inner">
+                                        <div class="feature-icon">
+                                            <img
+                                                src="dist/images/feature-icon-01.svg"
+                                                alt="Feature 01"
+                                            />
+                                        </div>
+                                        <h4 class="feature-title mt-24">
+                                            Api Get Room Game Data Api
+                                        </h4>
+                                        <h7 class="feature-title mt-24">
+                                            link below <br />
+                                            <a
+                                                href="https://server.atipnasakun.online/api/emergencyGetAllData"
+                                            >
+                                                https://server.atipnasakun.online/api/emergencyGetAllData</a
+                                            >
+                                        </h7>
+                                        <p class="text-sm mb-0">
+                                            result example <br />
+                                            { "started": true, "roomId":
+                                            "d66ff752-b9de-4219-9755-62b0f49fb589",
+                                            "roomName": "report peoject",
+                                            "gameType": 1, "players": [ {
+                                            "player": "test5", "playerId":
+                                            "652e05f278a11659be0d5dcc" }, {
+                                            "player": "test2", "playerId":
+                                            "652e053a78a11659be0d5dc6" } ],
+                                            "maxPlayer": 2, "owner": null,
+                                            "isActive": false, "boardSize": 3 }
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2>See Any DemoLive WebSites</h2>
+                            <div class="features-wrap">
+                                <div class="feature text-center is-revealing">
+                                    <div class="feature-inner">
+                                        <div class="feature-icon">
+                                            <img
+                                                src="dist/images/feature-icon-05.svg"
+                                                alt="Feature 02"
+                                            />
+                                        </div>
+                                        <h4 class="feature-title mt-24">
+                                            PaiMarket
+                                        </h4>
+                                        <p class="text-sm mb-0">
+                                            A Online Marketing Website You Can
+                                            See Demo At
+                                            <a
+                                                href="https://market-online.atipnasakun.online/home"
+                                                >https://market-online.atipnasakun.online/home</a
+                                            >
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="feature text-center is-revealing">
+                                    <div class="feature-inner">
+                                        <div class="feature-icon">
+                                            <img
+                                                src="dist/images/feature-icon-04.svg"
+                                                alt="Feature 02"
+                                            />
+                                        </div>
+                                        <h4 class="feature-title mt-24">
+                                            Bad-Boyz
+                                        </h4>
+                                        <p class="text-sm mb-0">
+                                            A Badminton player pairing can see
+                                            demo at
+                                            <a
+                                                href="https://badminton.atipnasakun.online"
+                                                >https://badminton.atipnasakun.online</a
+                                            >
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="cta section">
+                    <div class="container">
+                        <div class="cta-inner section-inner">
+                            <h3 class="section-title mt-0">
+                                Want See Any My Repositorys?
+                            </h3>
+                            <div class="cta-cta">
+                                <a
+                                    class="button button-primary button-wide-mobile"
+                                    href="https://github.com/atippaz?tab=repositories"
+                                    >Go Git</a
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <footer class="site-footer">
+                <div class="container">
+                    <div class="site-footer-inner">
+                        <div class="footer-copyright">
+                            &copy; 2020 Atippa Dev
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <script src="dist/js/main.min.js"></script>
     </body>
 </html>
