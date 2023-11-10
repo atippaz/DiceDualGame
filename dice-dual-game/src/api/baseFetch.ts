@@ -2,16 +2,18 @@ import { GetRequest, ApiResult } from './IApi'
 const path = import.meta.env.VITE_API_PATH || ''
 import { getContext } from '@/context'
 import { contextPluginSymbol } from '@/plugins/context'
-const context = getContext().inject(contextPluginSymbol)
-const token = context.token.value
 
 const Api = () => {
+    const context = getContext().inject(contextPluginSymbol)
+
     return {
         get<T>(
             controller: string,
             param?: string,
             query?: GetRequest
         ): Promise<ApiResult<T>> | null {
+            context.syncToken()
+            const token = context.token.value
             let queryString = ''
             if (path == null) return null
             return fetch(
@@ -43,6 +45,8 @@ const Api = () => {
                 })
         },
         post(controller: string, payload: any) {
+            context.syncToken()
+            const token = context.token.value
             return fetch(`${path}/${controller}`, {
                 method: 'post',
                 headers: {
