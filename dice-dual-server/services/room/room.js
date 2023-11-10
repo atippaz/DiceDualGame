@@ -196,5 +196,8 @@ const roomServices = {
     getRoomIsNotActive() {
         return roomState.filter((e) => !e.isActive).map((e) => e.roomId)
     },
+    getRoomAll() {
+        return roomState.map((e) => e.roomId)
+    },
 }
 export { roomState, roomServices }

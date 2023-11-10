@@ -4,7 +4,7 @@ import { mqqtService, mqqtState } from './mqqt/index.js'
 import { socketService, socketState } from './socket/index.js'
 
 function cleanData() {
-    roomServices.getRoomIsNotActive().forEach((e) => {
+    roomServices.getRoomAll().forEach((e) => {
         roomServices.deleteRoom(e)
         xoGameService.removeBoard(e)
     })
