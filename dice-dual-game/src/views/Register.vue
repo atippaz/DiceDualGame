@@ -9,9 +9,14 @@
         <v-text-field label="Confirm Password" v-model="cfPassword"></v-text-field>
 
                 </div>
-                    <div class="d-flex">
-                        <v-spacer></v-spacer>
+                <div class="d-flexs">
+                        <div style="flex-grow: 1">
+                        </div>
+                        <div style="flex-grow: 2"></div>
+                        <div style="flex-grow: 1" class="d-flex justify-end">
                         <Btn  background="#A6CF98" edge="#557C55" @click="registerBtn">Register</Btn>
+
+                        </div>
                     </div>
                    
                 </div>
@@ -38,3 +43,9 @@ function registerBtn(){
     register(name.value.trim(), username.value.trim(), password.value.trim())
 }
 </script>
+<style scoped lang="scss">
+.d-flexs{
+    display: flex;
+    align-items: stretch;
+}
+</style>

@@ -7,12 +7,15 @@
                     <v-text-field label="User Name" v-model="username"></v-text-field>
                     <v-text-field label="Password" v-model="password"></v-text-field>
                 </div>
-                    <div class="d-flex">
+                    <div class="d-flexs">
+                        <div style="flex-grow: 1">
                         <a href="register">register</a>
-                        <v-spacer></v-spacer>
-                        <Btn background="#A6CF98" edge="#557C55" @click="login">login</Btn>
+                        </div>
+                        <div style="flex-grow: 2"></div>
+                        <div style="flex-grow: 1" class="d-flex justify-end">
+                            <Btn background="#A6CF98" edge="#557C55" @click="login">login</Btn>
+                        </div>
                     </div>
-                   
                 </div>
     </div>
 </template>
@@ -28,3 +31,9 @@ const username = ref('')
 const login = () => loginApi(username.value.trim(), password.value.trim())
 
 </script>
+<style scoped lang="scss">
+.d-flexs{
+    display: flex;
+    align-items: stretch;
+}
+</style>
