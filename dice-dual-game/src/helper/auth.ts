@@ -49,6 +49,8 @@ function register(name: string, username: string, password: string) {
             context?.updateToken(token)
             context?.updateUserId(decoded.userId)
             router.push({ name: 'Home' })
+        } else if (e.statusCode === 409) {
+            alert('already has this username try again')
         }
     })
 }
