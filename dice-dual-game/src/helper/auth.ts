@@ -21,6 +21,7 @@ function login(username: string, password: string) {
             const token = e.data.token as string
             setToken(token)
             const decoded = jwt_decode(token) as any
+            context?.syncToken()
             context?.updateToken(token)
             context?.updateUserId(decoded.userId)
             router.push({ name: 'Home' })

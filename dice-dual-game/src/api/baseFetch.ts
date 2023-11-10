@@ -2,10 +2,10 @@ import { GetRequest, ApiResult } from './IApi'
 const path = import.meta.env.VITE_API_PATH || ''
 import { getContext } from '@/context'
 import { contextPluginSymbol } from '@/plugins/context'
+const context = getContext().inject(contextPluginSymbol)
+const token = context.token.value
 
 const Api = () => {
-    const context = getContext().inject(contextPluginSymbol)
-    const token = context.token.value
     return {
         get<T>(
             controller: string,

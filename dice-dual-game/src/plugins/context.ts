@@ -5,7 +5,7 @@ export const contextPluginSymbol: InjectionKey<PluginInstance> =
 import jwt_decode from 'jwt-decode'
 
 function $context() {
-    const _token = ref('')
+    const _token = ref<string | null>('')
     const _userId = ref('')
     function updateToken(token: string) {
         if (
@@ -16,6 +16,7 @@ function $context() {
             token.trim() === ''
         ) {
             localStorage.removeItem('userToken')
+            alert('token null')
             return
         }
         _token.value = token
@@ -27,19 +28,20 @@ function $context() {
         try {
             _token.value = localStorage.getItem('userToken') || ''
             _userId.value =
-                _token.value === '' ||
-                _token.value === undefined ||
-                _token.value === null
+                _token.value === '' || _token.value === null
                     ? ''
                     : (jwt_decode(_token.value) as any).userId
         } catch (er) {
             console.log(er)
+            alert('token error')
             localStorage.removeItem('userToken')
         }
     }
     syncToken()
     return {
-        token: computed(() => _token.value || ''),
+        token: computed(
+            () => _token.value || (localStorage.getItem('userToken') ?? '')
+        ),
         userId: computed(() => _userId.value),
         updateUserId,
         updateToken,
